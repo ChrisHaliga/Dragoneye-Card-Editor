@@ -1,0 +1,220 @@
+<!-- Navigation -->
+<nav class="navbar navbar-dark bg-primary">
+  <div class="container-fluid">
+    <span class="navbar-brand">Card Editor</span>
+    <ul class="navbar-nav d-flex flex-row">
+      <li class="nav-item"><a class="nav-link" href="#">Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" href="#">Cards</a></li>
+      <li class="nav-item"><a class="nav-link active" href="#">Editor</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- Main -->
+<div class="d-flex">
+  <!-- Sidebar -->
+  <div class="sidebar" [class.closed]="!isEditorOpen">
+    <div class="p-3 border-bottom bg-light d-flex justify-content-between">
+      <span>{{ cardData.filename }}</span>
+      <button class="btn btn-sm btn-outline-secondary" (click)="toggleEditor()">
+        {{ isEditorOpen ? '‹' : '›' }}
+      </button>
+    </div>
+
+    <div class="p-3" *ngIf="isEditorOpen">
+      <button class="btn btn-success btn-sm mb-3" (click)="saveData()">
+        💾 Save
+      </button>
+
+      <!-- Card Editing Form -->
+      <div class="mb-3" *ngIf="currentCard">
+        <h6 class="text-muted mb-2">Edit Card</h6>
+
+        <!-- Card Title -->
+        <div class="mb-2">
+          <label class="form-label small">Title</label>
+          <input type="text" class="form-control form-control-sm"
+                 [(ngModel)]="currentCard.title" placeholder="Card title">
+        </div>
+
+        <!-- Element -->
+        <div class="mb-2">
+          <label class="form-label small">Element</label>
+          <input type="text" class="form-control form-control-sm"
+                 [(ngModel)]="currentCard.element" placeholder="fire, water, etc.">
+        </div>
+
+        <!-- Background Image -->
+        <div class="mb-2">
+          <label class="form-label small">Background Image</label>
+          <input type="text" class="form-control form-control-sm mb-1"
+                 [(ngModel)]="currentCard.backgroundImage" placeholder="Image URL or filename">
+          <input type="file" class="form-control form-control-sm"
+                 accept="image/*" (change)="onImageChange($event)">
+          <small class="text-muted">Leave empty for default.png</small>
+        </div>
+
+        <!-- Details Section - MULTIPLE DETAILS SUPPORT -->
+        <div class="mb-2">
+          <label class="form-label small">Details</label>
+          <div *ngFor="let detail of currentCard.details; let i = index" class="border p-2 mb-2 rounded">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <small class="text-muted fw-bold">Detail {{ i + 1 }}</small>
+              <button class="btn btn-sm btn-outline-danger" (click)="removeDetail(i)"
+                      [disabled]="currentCard.details.length === 1">
+                ×
+              </button>
+            </div>
+
+            <div class="row mb-2">
+              <div class="col-6">
+                <label class="form-label small">AP Cost</label>
+                <input type="number" class="form-control form-control-sm"
+                       [(ngModel)]="detail.apCost" min="0">
+              </div>
+              <div class="col-6">
+                <label class="form-label small">SP Cost</label>
+                <input type="number" class="form-control form-control-sm"
+                       [(ngModel)]="detail.spCost" min="0">
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label small">Action Title</label>
+              <input type="text" class="form-control form-control-sm"
+                     [(ngModel)]="detail.type" placeholder="Attack, Spell, etc.">
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label small">Description</label>
+              <textarea class="form-control form-control-sm" rows="2"
+                        [(ngModel)]="detail.details"
+                        placeholder="Action description"></textarea>
+            </div>
+          </div>
+
+          <button class="btn btn-sm btn-outline-primary w-100" (click)="addDetail()">
+            + Add Detail
+          </button>
+        </div>
+      </div>
+
+      <!-- Tree View with Full Group Management -->
+      <div class="tree-view">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h6 class="text-muted mb-0">Groups & Cards</h6>
+          <button class="btn btn-sm btn-outline-primary" (click)="addGroup()">+ Group</button>
+        </div>
+
+        <div *ngFor="let group of cardData.groups; let gi = index" class="mb-3 border-start ps-2">
+          <!-- Group Header with Edit/Delete -->
+          <div class="d-flex align-items-center mb-2">
+            <input type="text" class="form-control form-control-sm flex-grow-1 fw-bold"
+                   [(ngModel)]="group.name"
+                   style="font-size: 13px;">
+            <button class="btn btn-sm btn-outline-danger ms-2" (click)="removeGroup(gi)"
+                    [disabled]="cardData.groups.length === 1" title="Delete Group">
+              ×
+            </button>
+          </div>
+
+          <!-- Cards in Group -->
+          <div *ngFor="let card of group.cards; let ci = index"
+               class="tree-item ms-2 mb-1"
+               [class.active]="gi === selectedGroupIndex && ci === selectedCardIndex"
+               (click)="selectCard(gi, ci)">
+            <div class="small fw-bold">{{ card.title }}</div>
+            <div class="text-muted" style="font-size: 11px;">{{ card.element }} • {{ card.details.length }} details</div>
+          </div>
+
+          <!-- Add Card Button -->
+          <button class="btn btn-sm btn-outline-secondary ms-2 mt-1" (click)="addCard(gi)">
+            + Add Card to {{ group.name }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card Area -->
+  <div class="card-area">
+    <div class="card-preview" *ngIf="currentCard">
+      <svg viewBox="0 0 200 280" class="w-100" style="max-width: 350px;">
+        <!-- Defs for gradients and effects -->
+        <defs>
+          <radialGradient id="cardBg" cx="50%" cy="40%" r="60%">
+            <stop offset="0%" style="stop-color:#d4a574" />
+            <stop offset="100%" style="stop-color:#8b4513" />
+          </radialGradient>
+          <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="2" dy="3" stdDeviation="2" flood-opacity="0.4" />
+          </filter>
+          <clipPath id="imageClip">
+            <rect x="20" y="70" width="160" height="185" rx="4" />
+          </clipPath>
+        </defs>
+
+        <!-- Card Base -->
+        <rect x="10" y="10" width="180" height="260" rx="8"
+              fill="url(#cardBg)" stroke="#654321" stroke-width="2" filter="url(#shadow)" />
+
+        <!-- Header Section (ends at center of circle) -->
+        <rect x="20" y="20" width="145" height="24"
+              fill="white" stroke="black" stroke-width="1.5" />
+
+        <!-- Title Text -->
+        <text x="25" y="36" font-size="11" font-weight="bold" fill="black" font-family="serif">
+          {{ currentCard.title }}
+        </text>
+
+        <!-- Element Circle (bigger) -->
+        <circle cx="165" cy="32" r="16" fill="white" stroke="black" stroke-width="1.5" />
+        <text x="165" y="38" text-anchor="middle" font-size="18" font-weight="bold" fill="black">
+          {{ currentCard.element.charAt(0).toUpperCase() }}
+        </text>
+
+        <!-- Type Badge (first detail's type) -->
+        <rect x="25" y="50" width="40" height="12" fill="black" />
+        <text x="45" y="59" text-anchor="middle" fill="white" font-size="8" font-family="serif">
+          {{ currentCard.details[0]?.type?.toUpperCase() || 'ACTION' }}
+        </text>
+
+        <!-- Background Image Area (extends to bottom) -->
+        <image [attr.href]="getCardImage()" x="20" y="70" width="160" height="185"
+               preserveAspectRatio="xMidYMid slice" clip-path="url(#imageClip)" />
+
+        <!-- Image Border -->
+        <rect x="20" y="70" width="160" height="185"
+              fill="none" stroke="black" stroke-width="1" />
+
+        <!-- Description Box (transparent overlay, taller) -->
+        <rect x="20" y="195" width="160" height="60"
+              fill="white" fill-opacity="0.85" stroke="black" stroke-width="1" />
+
+        <!-- Multiple Details Display (adjusted positions) -->
+        <g *ngFor="let detail of currentCard.details; let i = index">
+          <!-- AP/SP Circles for each detail -->
+          <g>
+            <!-- AP Circles (white) -->
+            <circle *ngFor="let ap of getCircles(detail.apCost, 'white'); let j = index"
+                    [attr.cx]="28 + (j * 8)" [attr.cy]="205 + (i * 20)" r="3" fill="white" stroke="black" stroke-width="0.5" />
+            <!-- SP Circles (black) -->
+            <circle *ngFor="let sp of getCircles(detail.spCost, 'black'); let j = index"
+                    [attr.cx]="28 + ((detail.apCost + j) * 8)" [attr.cy]="205 + (i * 20)" r="3" fill="black" stroke="black" stroke-width="0.5" />
+          </g>
+
+          <!-- Detail Title (inline with circles) -->
+          <text [attr.x]="getDetailTitleX(detail)"
+                [attr.y]="208 + (i * 20)" font-size="7" fill="black" font-family="serif" font-weight="bold">
+            {{ detail.type }}
+          </text>
+
+          <!-- Detail Description (next line) -->
+          <text x="28" [attr.y]="216 + (i * 20)" font-size="6" fill="black" font-family="serif">
+            <tspan>{{ detail.details }}</tspan>
+          </text>
+        </g>
+      </svg>
+    </div>
+  </div>
+</div>
