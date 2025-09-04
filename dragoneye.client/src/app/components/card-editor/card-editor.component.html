@@ -1,19 +1,90 @@
-<!-- Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <div class="container-fluid">
-    <span class="navbar-brand">Card Editor</span>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="#">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Cards</a></li>
-        <li class="nav-item"><a class="nav-link active" href="#">Editor</a></li>
+<!-- Toolbar -->
+<div class="toolbar">
+  <div class="toolbar-menu">
+    <div class="dropdown">
+      <button class="toolbar-button dropdown-toggle" data-bs-toggle="dropdown">
+        File
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#" (click)="saveData(); $event.preventDefault()">
+          <i class="bi bi-cloud-upload me-2"></i>Save
+        </a></li>
+        <li><a class="dropdown-item" href="#" (click)="showLoadModal(); $event.preventDefault()">
+          <i class="bi bi-folder2-open me-2"></i>Load
+        </a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="#" (click)="exportData(); $event.preventDefault()">
+          <i class="bi bi-download me-2"></i>Export as JSON
+        </a></li>
+        <li><a class="dropdown-item" href="#" (click)="exportAsSVG(); $event.preventDefault()">
+          <i class="bi bi-file-earmark-image me-2"></i>Export as SVG
+        </a></li>
+        <li><label class="dropdown-item mb-0" for="importFile">
+          <i class="bi bi-upload me-2"></i>Import
+        </label></li>
+        <input type="file" id="importFile" class="d-none" accept=".json" (change)="importFile($event)">
+      </ul>
+    </div>
+
+    <div class="dropdown">
+      <button class="toolbar-button dropdown-toggle" data-bs-toggle="dropdown">
+        Edit
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#" [class.disabled]="!hasCards">
+          <i class="bi bi-arrow-clockwise me-2"></i>Undo
+        </a></li>
+        <li><a class="dropdown-item" href="#" [class.disabled]="!hasCards">
+          <i class="bi bi-arrow-counterclockwise me-2"></i>Redo
+        </a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="#" [class.disabled]="!currentCard" (click)="duplicateCurrentCard(); $event.preventDefault()">
+          <i class="bi bi-files me-2"></i>Duplicate Card
+        </a></li>
+        <li><a class="dropdown-item text-danger" href="#" [class.disabled]="!currentCard" (click)="deleteCurrentCard(); $event.preventDefault()">
+          <i class="bi bi-trash me-2"></i>Delete Card
+        </a></li>
+      </ul>
+    </div>
+
+    <div class="dropdown">
+      <button class="toolbar-button dropdown-toggle" data-bs-toggle="dropdown">
+        View
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#" (click)="toggleEditor(); $event.preventDefault()">
+          <i class="bi me-2" [class.bi-check]="isEditorOpen"></i>Project Manager
+        </a></li>
+        <li><a class="dropdown-item" href="#" (click)="toggleBottomPanel(); $event.preventDefault()">
+          <i class="bi me-2" [class.bi-check]="isBottomPanelOpen"></i>Card Properties
+        </a></li>
+      </ul>
+    </div>
+
+    <div class="dropdown">
+      <button class="toolbar-button dropdown-toggle" data-bs-toggle="dropdown">
+        Help
+      </button>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="#" (click)="showGettingStarted(); $event.preventDefault()">
+          <i class="bi bi-question-circle me-2"></i>Getting Started
+        </a></li>
+        <li><a class="dropdown-item" href="#" (click)="showKeyboardShortcuts(); $event.preventDefault()">
+          <i class="bi bi-keyboard me-2"></i>Keyboard Shortcuts
+        </a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="#" (click)="openAboutPage(); $event.preventDefault()">
+          <i class="bi bi-info-circle me-2"></i>About Dragoneye
+        </a></li>
       </ul>
     </div>
   </div>
-</nav>
+
+  <div class="toolbar-title">
+    <span class="app-title">Dragoneye Card Editor</span>
+    <span class="file-name" *ngIf="cardData.filename">- {{ cardData.filename }}</span>
+  </div>
+</div>
 
 <!-- Main Layout -->
 <div class="main-layout">
@@ -27,21 +98,12 @@
     </div>
 
     <div class="panel-content" *ngIf="isEditorOpen">
-      <!-- File Management -->
+      <!-- File Management - Simplified since toolbar handles most actions -->
       <div class="section-card mb-3">
-        <h6 class="section-title">File Settings</h6>
+        <h6 class="section-title">Current File</h6>
         <div class="mb-2">
           <label class="form-label">Filename</label>
           <input type="text" class="form-control form-control-sm" [(ngModel)]="cardData.filename" placeholder="my-cards.json">
-        </div>
-        <div class="d-flex gap-2">
-          <button class="btn btn-success btn-sm flex-fill" (click)="saveData()">
-            <i class="bi bi-floppy-fill me-1"></i> Save
-          </button>
-          <label class="btn btn-outline-primary btn-sm flex-fill mb-0" for="loadFile">
-            <i class="bi bi-folder-open me-1"></i> Load
-          </label>
-          <input type="file" id="loadFile" class="d-none" accept=".json" (change)="loadFile($event)">
         </div>
       </div>
 
@@ -74,3 +136,20 @@
     </div>
   </div>
 </div>
+
+<!-- File Manager Modal -->
+<app-file-manager-modal 
+  #fileManagerModal
+  (fileSelected)="onFileSelected($event)">
+</app-file-manager-modal>
+
+<!-- Overwrite Confirmation Modal -->
+<app-overwrite-confirmation-modal
+  #overwriteModal
+  (confirmed)="onOverwriteConfirmed($event)">
+</app-overwrite-confirmation-modal>
+
+<!-- Getting Started Modal -->
+<app-getting-started-modal
+  #gettingStartedModal>
+</app-getting-started-modal>

@@ -1,0 +1,73 @@
+<div class="modal" [class.show]="isVisible" [style.display]="isVisible ? 'block' : 'none'">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-play-circle me-2"></i>Getting Started with Dragoneye Card Editor
+        </h5>
+        <button type="button" class="btn-close" (click)="hide()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="getting-started-content">
+          <div class="welcome-section mb-4">
+            <h6><i class="bi bi-heart me-2"></i>Welcome to Dragoneye!</h6>
+            <p>Create, edit, and manage your card collections with ease. Here's how to get started:</p>
+          </div>
+
+          <div class="step-section mb-4">
+            <h6><i class="bi bi-1-circle me-2"></i>Creating Your First Card</h6>
+            <ul>
+              <li>Use the <strong>Project Manager</strong> panel on the left to organize your cards into groups</li>
+              <li>Click the <strong>+ Add Card</strong> button to create a new card</li>
+              <li>Select your new card to start editing its properties</li>
+            </ul>
+          </div>
+
+          <div class="step-section mb-4">
+            <h6><i class="bi bi-2-circle me-2"></i>Editing Card Properties</h6>
+            <ul>
+              <li>Use the <strong>Card Properties</strong> panel at the bottom to edit card details</li>
+              <li>Set the card's title, type, element, and background image</li>
+              <li>Add multiple card details with action points (AP) and spell points (SP) costs</li>
+              <li>Each detail can have its own description and costs</li>
+            </ul>
+          </div>
+
+          <div class="step-section mb-4">
+            <h6><i class="bi bi-3-circle me-2"></i>Managing Your Collection</h6>
+            <ul>
+              <li><strong>File → Save</strong> to save your card set to the server</li>
+              <li><strong>File → Load</strong> to browse and load existing card sets</li>
+              <li><strong>File → Export as JSON</strong> to download your cards as a backup</li>
+              <li><strong>File → Export as SVG</strong> to export individual cards as images</li>
+            </ul>
+          </div>
+
+          <div class="step-section mb-4">
+            <h6><i class="bi bi-4-circle me-2"></i>Interface Tips</h6>
+            <ul>
+              <li>Use <strong>View</strong> menu to show/hide panels based on your workflow</li>
+              <li>The card preview updates in real-time as you make changes</li>
+              <li>Use zoom controls in the card display to get a better view</li>
+              <li>Elements have unique symbols and colors for easy identification</li>
+            </ul>
+          </div>
+
+          <div class="tip-box">
+            <i class="bi bi-lightbulb me-2"></i>
+            <strong>Pro Tip:</strong> Start with simple cards and gradually add more complex details as you become familiar with the interface!
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="hide()">
+          <i class="bi bi-check me-1"></i> Got it!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isVisible" (click)="hide()"></div>

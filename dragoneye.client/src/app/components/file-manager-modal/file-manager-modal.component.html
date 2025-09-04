@@ -1,0 +1,58 @@
+<div class="modal" [class.show]="isVisible" [style.display]="isVisible ? 'block' : 'none'">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Load Card Set</h5>
+        <button type="button" class="btn-close" (click)="hide()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Search Files</label>
+          <input 
+            type="text" 
+            class="form-control" 
+            [(ngModel)]="searchTerm" 
+            (input)="onSearchChange()"
+            placeholder="Type to filter files..."
+            #searchInput>
+        </div>
+
+        <div *ngIf="isLoading" class="text-center py-4">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
+        <div *ngIf="!isLoading && filteredFiles.length === 0" class="text-center text-muted py-4">
+          <p *ngIf="files.length === 0">No saved files found.</p>
+          <p *ngIf="files.length > 0">No files match your search.</p>
+        </div>
+
+        <div class="file-list" *ngIf="!isLoading && filteredFiles.length > 0">
+          <div 
+            *ngFor="let file of filteredFiles" 
+            class="file-item" 
+            (click)="selectFile(file)">
+            <div class="file-info">
+              <i class="bi bi-file-earmark-text me-2"></i>
+              <span class="file-name">{{ file }}</span>
+            </div>
+            <button 
+              class="btn btn-outline-danger btn-sm delete-btn" 
+              (click)="deleteFile(file, $event)"
+              title="Delete file">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="hide()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isVisible" (click)="hide()"></div>

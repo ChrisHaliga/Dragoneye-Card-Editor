@@ -1,0 +1,29 @@
+<div class="modal" [class.show]="isVisible" [style.display]="isVisible ? 'block' : 'none'">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">File Already Exists</h5>
+        <button type="button" class="btn-close" (click)="cancel()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-exclamation-triangle text-warning me-3" style="font-size: 2rem;"></i>
+          <div>
+            <p class="mb-1">A file named <strong>"{{ filename }}"</strong> already exists.</p>
+            <p class="mb-0 text-muted">Do you want to overwrite it?</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cancel()">Cancel</button>
+        <button type="button" class="btn btn-warning" (click)="confirm()">
+          <i class="bi bi-exclamation-triangle me-1"></i> Overwrite
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isVisible" (click)="cancel()"></div>

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { CardApiService } from './card-api.service';
 
 export interface CardDetail {
   type: string;
@@ -35,39 +36,64 @@ export interface ElementData {
 
 @Injectable({ providedIn: 'root' })
 export class CardService {
-  private readonly elements = new Map<string, ElementData>([
-    ['fire', { key: 'fire', name: 'Fire', symbol: '🔥' }],
-    ['water', { key: 'water', name: 'Water', symbol: '💧' }],
-    ['earth', { key: 'earth', name: 'Earth', symbol: '🌍' }],
-    ['air', { key: 'air', name: 'Air', symbol: '💨' }],
-    ['dark', { key: 'dark', name: 'Dark', symbol: '🌑' }],
-    ['light', { key: 'light', name: 'Light', symbol: '☀️' }],
-    ['arcane', { key: 'arcane', name: 'Arcane', symbol: '✶' }]
+  private readonly elementSymbols = new Map<string, string>([
+    ['pyr', '🔥'],
+    ['hyd', '💧'],
+    ['geo', '🌍'],
+    ['aer', '💨'],
+    ['nyx', '🌑'],
+    ['lux', '☀️'],
+    ['arc', '✶']
   ]);
 
+  private elementsMap = new Map<string, ElementData>();
+  private elementsArrayCache: ElementData[] = [];
+
   private cardDataSubject = new BehaviorSubject<CardData>({
-    filename: 'my-card-set.json',
-    groups: [{
-      name: 'Fire Cards',
-      expanded: true,
-      cards: [{
-        title: 'Flame Strike',
-        type: 'Spell',
-        element: 'fire',
-        backgroundImage: '',
-        details: [{ type: 'Attack', details: 'Deal 3 damage to target enemy', apCost: 2, spCost: 1 }]
-      }]
-    }]
+    filename: '',
+    groups: []
   });
 
   public cardData$: Observable<CardData> = this.cardDataSubject.asObservable();
 
+  constructor(private apiService: CardApiService) {
+    this.loadInitialData();
+  }
+
+  private async loadInitialData(): Promise<void> {
+    try {
+      // Load elements from backend and map symbols
+      const elements = await this.apiService.getElements().toPromise();
+      if (elements) {
+        this.elementsArrayCache = elements.map(el => ({
+          ...el,
+          symbol: this.elementSymbols.get(el.key) || el.key.charAt(0).toUpperCase()
+        }));
+        this.elementsMap = new Map(this.elementsArrayCache.map(el => [el.key, el]));
+      }
+
+      // Load card data
+      const cardData = await this.apiService.getCardData().toPromise();
+      if (cardData) {
+        this.cardDataSubject.next(cardData);
+      }
+    } catch (error) {
+      console.error('Failed to load initial data:', error);
+      // Fallback to empty state
+      this.cardDataSubject.next({ filename: 'my-card-set.json', groups: [] });
+    }
+  }
+
   get cardData(): CardData { return this.cardDataSubject.value; }
-  get elementsArray(): ElementData[] { return Array.from(this.elements.values()); }
+  get elementsArray(): ElementData[] { return this.elementsArrayCache; }
   get hasCards(): boolean { return this.cardData.groups.some(group => group.cards.length > 0); }
 
   getElement(key: string): ElementData {
-    return this.elements.get(key.toLowerCase()) || { key: 'arcane', name: key, symbol: key.charAt(0).toUpperCase() };
+    return this.elementsMap.get(key.toLowerCase()) || { 
+      key: 'arc', 
+      name: key, 
+      symbol: this.elementSymbols.get('arc') || '✶'
+    };
   }
 
   getElementSymbol(key: string): string { return this.getElement(key).symbol; }
@@ -76,6 +102,15 @@ export class CardService {
 
   updateCardData(data: CardData): void {
     this.cardDataSubject.next(data);
+    // Save to backend
+    this.apiService.updateCardData(data).subscribe({
+      next: (savedData) => {
+        console.log('Data saved to backend');
+      },
+      error: (error) => {
+        console.error('Failed to save data to backend:', error);
+      }
+    });
   }
 
   addGroup(): void {
@@ -114,7 +149,7 @@ export class CardService {
     const newCard: Card = {
       title: 'New Card',
       type: 'Creature',
-      element: 'arcane',
+      element: 'arc',
       backgroundImage: '',
       details: [{ type: 'Action', details: 'Enter description here', apCost: 1, spCost: 0 }]
     };
@@ -160,6 +195,22 @@ export class CardService {
   }
 
   saveData(): void {
+    // Save to backend via API (uses POST for new save with unique filename)
+    this.apiService.saveCardData(this.cardData).subscribe({
+      next: (savedData) => {
+        console.log('Data saved to backend');
+        this.cardDataSubject.next(savedData);
+        // Could show a success toast here
+      },
+      error: (error) => {
+        console.error('Failed to save data to backend:', error);
+        // Could show an error toast here
+      }
+    });
+  }
+
+  exportData(): void {
+    // Export as JSON file download
     const dataStr = JSON.stringify(this.cardData, null, 2);
     const url = URL.createObjectURL(new Blob([dataStr], { type: 'application/json' }));
     const link = Object.assign(document.createElement('a'), {
@@ -170,7 +221,8 @@ export class CardService {
     URL.revokeObjectURL(url);
   }
 
-  loadFile(event: Event): Promise<void> {
+  importFile(event: Event): Promise<void> {
+    // Import from JSON file upload
     return new Promise((resolve, reject) => {
       const file = (event.target as HTMLInputElement).files?.[0];
       if (!file?.type.includes('json')) {
@@ -190,6 +242,47 @@ export class CardService {
       };
       reader.readAsText(file);
       (event.target as HTMLInputElement).value = '';
+    });
+  }
+
+  loadFile(filename: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.apiService.getCardDataByFilename(filename).subscribe({
+        next: (data) => {
+          this.cardDataSubject.next(data);
+          resolve();
+        },
+        error: (error) => {
+          console.error('Failed to load file:', error);
+          reject(error);
+        }
+      });
+    });
+  }
+
+  async checkFileExists(filename: string): Promise<boolean> {
+    try {
+      const result = await this.apiService.fileExists(filename).toPromise();
+      return result || false;
+    } catch (error) {
+      console.error('Error checking file existence:', error);
+      return false;
+    }
+  }
+
+  saveDataWithOverwrite(allowOverwrite: boolean = false): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.apiService.saveCardData(this.cardData).subscribe({
+        next: (savedData) => {
+          console.log('Data saved to backend');
+          this.cardDataSubject.next(savedData);
+          resolve();
+        },
+        error: (error) => {
+          console.error('Failed to save data to backend:', error);
+          reject(error);
+        }
+      });
     });
   }
 }

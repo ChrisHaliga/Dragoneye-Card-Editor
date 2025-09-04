@@ -1,9 +1,68 @@
 /* Professional Dual-Pane Layout */
 .main-layout {
   display: flex;
-  height: calc(100vh - 56px);
+  height: calc(100vh - 40px);
   background: #f8f9fa;
   overflow: hidden;
+}
+
+/* Toolbar */
+.toolbar {
+  background: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  position: relative;
+}
+
+.toolbar-menu {
+  display: flex;
+  align-items: center;
+}
+
+.toolbar-button {
+  background: none;
+  border: none;
+  padding: 8px 16px;
+  color: #495057;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-radius: 0;
+}
+
+.toolbar-button:hover,
+.toolbar-button:focus {
+  background-color: #e9ecef;
+  color: #495057;
+  box-shadow: none;
+}
+
+.toolbar-button.show {
+  background-color: #e9ecef;
+}
+
+.toolbar-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  color: #495057;
+  pointer-events: none;
+}
+
+.app-title {
+  font-weight: 600;
+}
+
+.file-name {
+  margin-left: 8px;
+  color: #6c757d;
+  font-weight: 400;
 }
 
 /* Side Panel (Primary) - Fixed Size */
@@ -95,8 +154,49 @@
   letter-spacing: 0.025em;
 }
 
+/* Dropdown Menu */
+.dropdown-menu {
+  min-width: 200px;
+  font-size: 14px;
+}
+
+.dropdown-item {
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item.disabled {
+  color: #6c757d !important;
+  pointer-events: none;
+  background-color: transparent;
+}
+
+.dropdown-item.text-danger.disabled {
+  color: #dc3545 !important;
+  opacity: 0.5;
+}
+
+.dropdown-item i {
+  width: 16px;
+  text-align: center;
+}
+
 /* Responsive Design - Mobile First */
 @media (max-width: 768px) {
+  .toolbar-title {
+    display: none;
+  }
+  
+  .toolbar-button {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
   .main-layout {
     flex-direction: column;
   }
