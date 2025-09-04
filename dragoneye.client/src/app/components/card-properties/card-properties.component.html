@@ -1,0 +1,104 @@
+<div class="row">
+  <div class="col-md-4">
+    <div class="section-card">
+      <h6 class="section-title">Card Properties</h6>
+
+      <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input type="text" class="form-control form-control-sm" [(ngModel)]="card.title" placeholder="Enter card title">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Type</label>
+        <input type="text" class="form-control form-control-sm" [(ngModel)]="card.type" placeholder="e.g., Creature, Spell, Artifact">
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Element</label>
+        <select class="form-select form-select-sm" [(ngModel)]="card.element">
+          <option *ngFor="let element of cardService.elementsArray" [value]="element.key">
+            {{element.symbol}} {{element.name}}
+          </option>
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Background Image</label>
+        <input type="text" class="form-control form-control-sm mb-2" [(ngModel)]="card.backgroundImage" placeholder="Image URL or upload below">
+        <div class="d-flex gap-2">
+          <label class="btn btn-outline-primary btn-sm flex-fill mb-0" for="imageUpload">
+            <i class="bi bi-camera me-1"></i> Upload
+          </label>
+          <button class="btn btn-outline-danger btn-sm" (click)="removeImage()" [disabled]="!card.backgroundImage">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+        <input type="file" id="imageUpload" class="d-none" accept="image/*" (change)="onImageChange($event)">
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-8">
+    <div class="section-card">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="section-title mb-0">Card Details</h6>
+        <button class="btn btn-sm btn-outline-primary" (click)="addDetail()">
+          <i class="bi bi-plus me-1"></i> Add Detail
+        </button>
+      </div>
+
+      <div *ngFor="let detail of card.details; let i = index" class="detail-section mb-2">
+        <div class="detail-summary" (click)="selectDetail(i)" [class.selected]="selectedDetailIndex === i">
+          <div class="detail-title-row">
+            <span class="detail-title-text">{{ detail.type || 'Unnamed Detail' }}</span>
+            <div class="detail-costs-compact">
+              <span class="cost-compact ap">{{ detail.apCost }}AP</span>
+              <span class="cost-compact sp">{{ detail.spCost }}SP</span>
+            </div>
+          </div>
+          <div class="detail-actions">
+            <div class="dropdown">
+              <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" (click)="$event.stopPropagation()">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" (click)="duplicateDetail(i); $event.preventDefault()">Duplicate</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="#" (click)="removeDetail(i); $event.preventDefault()" [class.disabled]="card.details.length === 1">Delete</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-content" *ngIf="selectedDetailIndex === i">
+          <div class="row mb-3">
+            <div class="col">
+              <label class="form-label">Action Type</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="detail.type" placeholder="e.g., Attack, Spell, Heal">
+            </div>
+            <div class="col-auto">
+              <label class="form-label">AP Cost</label>
+              <input type="number" class="form-control form-control-sm" style="width: 70px;" [(ngModel)]="detail.apCost" min="0" max="10">
+            </div>
+            <div class="col-auto">
+              <label class="form-label">SP Cost</label>
+              <input type="number" class="form-control form-control-sm" style="width: 70px;" [(ngModel)]="detail.spCost" min="0" max="10">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control form-control-sm" rows="3" [(ngModel)]="detail.details" placeholder="Describe what this action does..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="card.details.length === 0" class="text-center text-muted py-4">
+        <p>No details yet. Add your first detail to get started.</p>
+        <button class="btn btn-outline-primary btn-sm" (click)="addDetail()">
+          <i class="bi bi-plus me-1"></i> Add First Detail
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
