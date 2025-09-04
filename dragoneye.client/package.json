@@ -21,6 +21,7 @@
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
     "bootstrap": "^5.3.8",
+    "bootstrap-icons": "^1.13.1",
     "jest-editor-support": "*",
     "run-script-os": "*",
     "rxjs": "~7.8.0",
