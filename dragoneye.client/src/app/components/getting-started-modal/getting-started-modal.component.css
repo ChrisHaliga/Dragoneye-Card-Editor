@@ -14,13 +14,16 @@
 
 .getting-started-content {
   line-height: 1.6;
+  color: var(--text-primary);
 }
 
 .welcome-section {
-  background: #e3f2fd;
+  background: var(--active-bg);
   padding: 1rem;
   border-radius: 8px;
   border-left: 4px solid #2196f3;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
 }
 
 .step-section h6 {
@@ -36,14 +39,15 @@
 
 .step-section li {
   margin-bottom: 0.25rem;
+  color: var(--text-primary);
 }
 
 .tip-box {
-  background: #fff3cd;
-  border: 1px solid #ffeaa7;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 1rem;
-  color: #856404;
+  color: var(--text-primary);
 }
 
 .modal-dialog {

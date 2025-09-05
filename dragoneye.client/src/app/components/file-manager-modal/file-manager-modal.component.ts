@@ -11,11 +11,11 @@ export class FileManagerModalComponent implements OnInit {
   @Output() fileSelected = new EventEmitter<string>();
   @Output() modalClosed = new EventEmitter<void>();
 
-  public isVisible = false;
-  public files: string[] = [];
-  public filteredFiles: string[] = [];
-  public searchTerm = '';
-  public isLoading = false;
+  isVisible = false;
+  files: string[] = [];
+  filteredFiles: string[] = [];
+  searchTerm = '';
+  isLoading = false;
 
   constructor(private apiService: CardApiService) {}
 
@@ -23,36 +23,17 @@ export class FileManagerModalComponent implements OnInit {
     this.loadFiles();
   }
 
-  public show(): void {
+  show(): void {
     this.isVisible = true;
     this.loadFiles();
   }
 
-  public hide(): void {
+  hide(): void {
     this.isVisible = false;
     this.modalClosed.emit();
   }
 
-  private loadFiles(): void {
-    this.isLoading = true;
-    this.apiService.getAllFiles().subscribe({
-      next: (files) => {
-        this.files = files;
-        this.filterFiles();
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Failed to load files:', error);
-        this.isLoading = false;
-      }
-    });
-  }
-
-  public onSearchChange(): void {
-    this.filterFiles();
-  }
-
-  private filterFiles(): void {
+  onSearchChange(): void {
     if (!this.searchTerm.trim()) {
       this.filteredFiles = [...this.files];
     } else {
@@ -63,22 +44,33 @@ export class FileManagerModalComponent implements OnInit {
     }
   }
 
-  public selectFile(filename: string): void {
+  selectFile(filename: string): void {
     this.fileSelected.emit(filename);
     this.hide();
   }
 
-  public deleteFile(filename: string, event: Event): void {
+  deleteFile(filename: string, event: Event): void {
     event.stopPropagation();
     if (confirm(`Are you sure you want to delete "${filename}"?`)) {
       this.apiService.deleteCardData(filename).subscribe({
-        next: () => {
-          this.loadFiles();
-        },
-        error: (error) => {
-          console.error('Failed to delete file:', error);
-        }
+        next: () => this.loadFiles(),
+        error: (error) => console.error('Failed to delete file:', error)
       });
     }
+  }
+
+  private loadFiles(): void {
+    this.isLoading = true;
+    this.apiService.getAllFiles().subscribe({
+      next: (files) => {
+        this.files = files;
+        this.onSearchChange();
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Failed to load files:', error);
+        this.isLoading = false;
+      }
+    });
   }
 }

@@ -11,24 +11,24 @@ export class OverwriteConfirmationModalComponent {
   @Output() confirmed = new EventEmitter<boolean>();
   @Output() modalClosed = new EventEmitter<void>();
 
-  public isVisible = false;
+  isVisible = false;
 
-  public show(filename: string): void {
+  show(filename: string): void {
     this.filename = filename;
     this.isVisible = true;
   }
 
-  public hide(): void {
+  hide(): void {
     this.isVisible = false;
     this.modalClosed.emit();
   }
 
-  public confirm(): void {
+  confirm(): void {
     this.confirmed.emit(true);
     this.hide();
   }
 
-  public cancel(): void {
+  cancel(): void {
     this.confirmed.emit(false);
     this.hide();
   }

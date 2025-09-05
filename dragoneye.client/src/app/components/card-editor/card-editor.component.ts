@@ -1,10 +1,19 @@
-import { Component, OnInit, OnDestroy, HostListener, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener, ViewChild } from '@angular/core';
 import { Subscription } from 'rxjs';
+
 import { CardService, CardData, Card } from '../../services/card.service';
+import { PreferencesService } from '../../services/preferences.service';
+import { ThemeService } from '../../services/theme.service';
+import { StateService } from '../../services/state.service';
+
 import { CardSelection } from '../card-hierarchy/card-hierarchy.component';
 import { FileManagerModalComponent } from '../file-manager-modal/file-manager-modal.component';
 import { OverwriteConfirmationModalComponent } from '../overwrite-confirmation-modal/overwrite-confirmation-modal.component';
 import { GettingStartedModalComponent } from '../getting-started-modal/getting-started-modal.component';
+import { PreferencesModalComponent } from '../preferences-modal/preferences-modal.component';
+import { SaveAsModalComponent } from '../save-as-modal/save-as-modal.component';
+import { DeleteConfirmationModalComponent } from '../delete-confirmation-modal/delete-confirmation-modal.component';
+import { KeyboardShortcutsModalComponent } from '../keyboard-shortcuts-modal/keyboard-shortcuts-modal.component';
 
 @Component({
   selector: 'app-card-editor',
@@ -12,45 +21,58 @@ import { GettingStartedModalComponent } from '../getting-started-modal/getting-s
   styleUrls: ['./card-editor.component.css'],
   standalone: false
 })
-export class CardEditorComponent implements OnInit, OnDestroy, AfterViewInit {
+export class CardEditorComponent implements OnInit, OnDestroy {
   @ViewChild('fileManagerModal', { static: false }) fileManagerModal!: FileManagerModalComponent;
   @ViewChild('overwriteModal', { static: false }) overwriteModal!: OverwriteConfirmationModalComponent;
   @ViewChild('gettingStartedModal', { static: false }) gettingStartedModal!: GettingStartedModalComponent;
+  @ViewChild('preferencesModal', { static: false }) preferencesModal!: PreferencesModalComponent;
+  @ViewChild('saveAsModal', { static: false }) saveAsModal!: SaveAsModalComponent;
+  @ViewChild('deleteModal', { static: false }) deleteModal!: DeleteConfirmationModalComponent;
+  @ViewChild('keyboardShortcutsModal', { static: false }) keyboardShortcutsModal!: KeyboardShortcutsModalComponent;
   
-  public isEditorOpen: boolean = true;
-  public isBottomPanelOpen: boolean = true;
-  public selectedGroupIndex: number = 0;
-  public selectedCardIndex: number = 0;
-  public cardData: CardData = { filename: '', groups: [] };
+  isEditorOpen = true;
+  isBottomPanelOpen = true;
+  selectedGroupIndex = 0;
+  selectedCardIndex = 0;
+  cardData: CardData = { filename: '', groups: [] };
+  pendingSaveAsFilename = '';
+  pendingDeleteAction: (() => void) | null = null;
   
   private cardDataSubscription?: Subscription;
-  private viewInitialized = false;
 
-  constructor(public cardService: CardService) {}
+  constructor(
+    public cardService: CardService,
+    private preferencesService: PreferencesService,
+    private themeService: ThemeService,
+    private stateService: StateService
+  ) {}
 
-  public ngOnInit(): void {
+  ngOnInit(): void {
     this.cardDataSubscription = this.cardService.cardData$.subscribe(data => {
       this.cardData = data;
       this.ensureValidSelection();
     });
+
+    if (this.preferencesService.preferences.showWelcomeOnStartup) {
+      setTimeout(() => this.gettingStartedModal?.show(), 1000);
+    }
   }
 
-  public ngAfterViewInit(): void {
-    this.viewInitialized = true;
-  }
-
-  public ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.cardDataSubscription?.unsubscribe();
   }
 
   @HostListener('document:keydown', ['$event'])
-  public onKeyDown(event: KeyboardEvent): void {
-    // Handle keyboard shortcuts
+  onKeyDown(event: KeyboardEvent): void {
     if (event.ctrlKey || event.metaKey) {
       switch (event.key.toLowerCase()) {
         case 's':
           event.preventDefault();
-          this.saveData();
+          if (event.shiftKey) {
+            this.showSaveAsModal();
+          } else {
+            this.saveData();
+          }
           break;
         case 'o':
           event.preventDefault();
@@ -60,184 +82,212 @@ export class CardEditorComponent implements OnInit, OnDestroy, AfterViewInit {
           event.preventDefault();
           this.exportData();
           break;
+        case ',':
+          event.preventDefault();
+          this.showPreferences();
+          break;
       }
     }
-    
-    if (event.key === 'Escape') {
-      // Let child components handle their own escape logic
-    }
   }
 
-  private ensureValidSelection(): void {
-    if (this.selectedGroupIndex >= this.cardData.groups.length) {
-      this.selectedGroupIndex = 0;
-    }
-    const currentGroup = this.cardData.groups[this.selectedGroupIndex];
-    if (currentGroup && this.selectedCardIndex >= currentGroup.cards.length) {
-      this.selectedCardIndex = 0;
-    }
-  }
-
-  public get currentCard(): Card | null {
+  get currentCard(): Card | null {
     const group = this.cardData.groups[this.selectedGroupIndex];
     return group?.cards[this.selectedCardIndex] || null;
   }
 
-  public get hasCards(): boolean {
+  get hasCards(): boolean {
     return this.cardService.hasCards;
   }
 
-  public get noCardMessage(): string {
+  get noCardMessage(): string {
     return !this.hasCards ? 'No cards available. Create a card to get started.' : 'Select a card from the hierarchy to start editing';
   }
 
-  public get currentElementSymbol(): string {
+  get currentElementSymbol(): string {
     return this.currentCard ? this.cardService.getElementSymbol(this.currentCard.element) : '';
   }
 
-  // Panel management
-  public toggleEditor(): void { 
+  toggleEditor(): void { 
     this.isEditorOpen = !this.isEditorOpen; 
   }
   
-  public toggleBottomPanel(): void { 
+  toggleBottomPanel(): void { 
     this.isBottomPanelOpen = !this.isBottomPanelOpen; 
   }
 
-  // File operations
-  public async saveData(): Promise<void> {
-    const filename = this.cardData.filename || 'card-set.json';
-    
+  async saveData(): Promise<void> {
     try {
-      const exists = await this.cardService.checkFileExists(filename);
-      
-      if (exists) {
-        // Show overwrite confirmation modal
-        this.overwriteModal.show(filename);
-      } else {
-        // File doesn't exist, save directly
-        await this.cardService.saveDataWithOverwrite();
-      }
+      await this.stateService.saveData();
     } catch (error) {
-      console.error('Error checking file existence:', error);
-      // If check fails, try to save anyway
-      await this.cardService.saveDataWithOverwrite();
+      if (error === 'file_exists') {
+        this.overwriteModal.show(this.cardData.filename || 'card-set.json');
+      }
     }
   }
 
-  public async onOverwriteConfirmed(confirmed: boolean): Promise<void> {
+  showSaveAsModal(): void {
+    this.saveAsModal?.show(this.cardData.filename);
+  }
+
+  async onSaveAsFilename(filename: string): Promise<void> {
+    try {
+      this.pendingSaveAsFilename = filename;
+      await this.stateService.saveAsData(filename);
+    } catch (error) {
+      if (error === 'file_exists') {
+        this.overwriteModal.show(filename);
+      }
+    }
+  }
+
+  async onOverwriteConfirmed(confirmed: boolean): Promise<void> {
     if (confirmed) {
-      try {
-        await this.cardService.saveDataWithOverwrite(true);
-      } catch (error) {
-        console.error('Failed to save file:', error);
+      if (this.pendingSaveAsFilename) {
+        await this.stateService.saveAsWithOverwrite(this.pendingSaveAsFilename);
+        this.pendingSaveAsFilename = '';
+      } else {
+        await this.stateService.saveWithOverwrite();
       }
+    } else {
+      this.pendingSaveAsFilename = '';
     }
   }
 
-  public exportData(): void {
-    this.cardService.exportData();
+  exportData(): void {
+    this.stateService.exportData();
   }
 
-  public exportAsSVG(): void {
-    if (!this.currentCard) {
-      alert('Please select a card to export as SVG');
-      return;
-    }
-    
-    // Find the card display SVG element
-    const svgElement = document.querySelector('.displayed-card') as SVGElement;
-    if (!svgElement) {
-      alert('No card is currently displayed');
-      return;
-    }
-
-    // Create a copy of the SVG
-    const svgClone = svgElement.cloneNode(true) as SVGElement;
-    
-    // Convert to string
-    const svgString = new XMLSerializer().serializeToString(svgClone);
-    
-    // Create downloadable file
-    const blob = new Blob([svgString], { type: 'image/svg+xml' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${this.currentCard.title || 'card'}.svg`;
-    link.click();
-    URL.revokeObjectURL(url);
+  exportAsSVG(): void {
+    this.stateService.exportAsSVG(this.currentCard?.title);
   }
 
-  public importFile(event: Event): void {
-    this.cardService.importFile(event).catch(error => {
-      console.error(error);
-    });
+  importFile(event: Event): void {
+    this.stateService.importFile(event);
   }
 
-  public showLoadModal(): void {
-    setTimeout(() => {
-      if (!this.fileManagerModal) {
-        console.error('File manager modal is not available');
-        return;
-      }
-      
-      try {
-        this.fileManagerModal.show();
-      } catch (error) {
-        console.error('Error showing modal:', error);
-      }
-    }, 0);
+  showLoadModal(): void {
+    this.fileManagerModal?.show();
   }
 
-  public onFileSelected(filename: string): void {
-    this.cardService.loadFile(filename).catch(error => {
-      console.error('Failed to load file:', error);
-    });
+  onFileSelected(filename: string): void {
+    this.stateService.loadFile(filename);
   }
 
-  // Edit operations
-  public duplicateCurrentCard(): void {
+  duplicateCurrentCard(): void {
     if (!this.currentCard) return;
-    
-    const newCard = this.cardService.duplicateCard(this.selectedGroupIndex, this.selectedCardIndex);
-    // Select the new card
+    this.stateService.duplicateCard(this.selectedGroupIndex, this.selectedCardIndex, this.currentCard.title);
     this.selectedCardIndex = this.selectedCardIndex + 1;
   }
 
-  public deleteCurrentCard(): void {
+  deleteCurrentCard(): void {
     if (!this.currentCard) return;
     
-    if (confirm(`Are you sure you want to delete "${this.currentCard.title}"?`)) {
-      this.cardService.removeCard(this.selectedGroupIndex, this.selectedCardIndex);
-      // Adjust selection if needed
+    const shouldConfirm = this.preferencesService.preferences.confirmDeleteActions;
+    if (shouldConfirm) {
+      this.pendingDeleteAction = () => {
+        this.stateService.deleteCard(this.selectedGroupIndex, this.selectedCardIndex, this.currentCard!.title);
+        this.ensureValidSelection();
+      };
+      this.deleteModal?.show(this.currentCard.title, 'card');
+    } else {
+      this.stateService.deleteCard(this.selectedGroupIndex, this.selectedCardIndex, this.currentCard.title);
       this.ensureValidSelection();
     }
   }
 
-  // Help operations
-  public showGettingStarted(): void {
-    if (this.gettingStartedModal) {
-      this.gettingStartedModal.show();
+  onDeleteConfirmed(confirmed: boolean): void {
+    if (confirmed && this.pendingDeleteAction) {
+      this.pendingDeleteAction();
+    }
+    this.pendingDeleteAction = null;
+  }
+
+  onDeleteCard(groupIndex: number, cardIndex: number): void {
+    const card = this.cardData.groups[groupIndex]?.cards[cardIndex];
+    if (!card) return;
+
+    const shouldConfirm = this.preferencesService.preferences.confirmDeleteActions;
+    if (shouldConfirm) {
+      this.pendingDeleteAction = () => {
+        this.stateService.deleteCard(groupIndex, cardIndex, card.title);
+        this.ensureValidSelection();
+      };
+      this.deleteModal?.show(card.title, 'card');
+    } else {
+      this.stateService.deleteCard(groupIndex, cardIndex, card.title);
+      this.ensureValidSelection();
     }
   }
 
-  public showKeyboardShortcuts(): void {
-    // Placeholder for keyboard shortcuts modal
-    alert('Keyboard shortcuts:\n\nCtrl+S - Save\nCtrl+O - Load\nCtrl+E - Export\nEsc - Close modals');
+  onDeleteGroup(groupIndex: number): void {
+    const group = this.cardData.groups[groupIndex];
+    if (!group || this.cardData.groups.length === 1) return;
+
+    const shouldConfirm = this.preferencesService.preferences.confirmDeleteActions;
+    if (shouldConfirm) {
+      this.pendingDeleteAction = () => {
+        this.cardService.removeGroup(groupIndex);
+        this.ensureValidSelection();
+      };
+      this.deleteModal?.show(group.name, 'group');
+    } else {
+      this.cardService.removeGroup(groupIndex);
+      this.ensureValidSelection();
+    }
   }
 
-  public openAboutPage(): void {
-    window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
+  onDeleteDetail(detailIndex: number): void {
+    if (!this.currentCard) return;
+
+    const detail = this.currentCard.details[detailIndex];
+    if (!detail || this.currentCard.details.length === 1) return;
+
+    this.pendingDeleteAction = () => {
+      this.cardService.removeDetail(this.currentCard!, detailIndex);
+    };
+    this.deleteModal?.show(detail.type || 'detail', 'detail');
   }
 
-  // Card selection
-  public onCardSelected(selection: CardSelection): void {
+  showPreferences(): void {
+    this.preferencesModal?.show();
+  }
+
+  showGettingStarted(): void {
+    this.gettingStartedModal?.show();
+  }
+
+  showKeyboardShortcuts(): void {
+    this.keyboardShortcutsModal?.show();
+  }
+
+  openAboutPage(): void {
+    window.open('https://github.com/ChrisHaliga/Dragoneye', '_blank');
+  }
+
+  onCardSelected(selection: CardSelection): void {
     this.selectedGroupIndex = selection.groupIndex;
     this.selectedCardIndex = selection.cardIndex;
   }
 
-  public onCardAdded(selection: CardSelection): void {
+  onCardAdded(selection: CardSelection): void {
     this.selectedGroupIndex = selection.groupIndex;
     this.selectedCardIndex = selection.cardIndex;
+  }
+
+  private ensureValidSelection(): void {
+    if (!this.cardData.groups.length) {
+      this.selectedGroupIndex = 0;
+      this.selectedCardIndex = 0;
+      return;
+    }
+
+    if (this.selectedGroupIndex >= this.cardData.groups.length) {
+      this.selectedGroupIndex = 0;
+    }
+    
+    const currentGroup = this.cardData.groups[this.selectedGroupIndex];
+    if (currentGroup && this.selectedCardIndex >= currentGroup.cards.length) {
+      this.selectedCardIndex = Math.max(0, currentGroup.cards.length - 1);
+    }
   }
 }

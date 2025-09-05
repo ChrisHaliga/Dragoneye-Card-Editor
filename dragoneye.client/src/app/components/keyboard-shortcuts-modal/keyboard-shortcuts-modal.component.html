@@ -1,0 +1,55 @@
+<div class="modal" [class.show]="isVisible" [style.display]="isVisible ? 'block' : 'none'">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-keyboard me-2"></i>Keyboard Shortcuts
+        </h5>
+        <button type="button" class="btn-close" (click)="hide()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h6 class="text-muted text-uppercase fw-bold mb-3">File Operations</h6>
+            <div class="shortcut-item">
+              <kbd>Ctrl</kbd> + <kbd>S</kbd>
+              <span>Save</span>
+            </div>
+            <div class="shortcut-item">
+              <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd>
+              <span>Save As</span>
+            </div>
+            <div class="shortcut-item">
+              <kbd>Ctrl</kbd> + <kbd>O</kbd>
+              <span>Load</span>
+            </div>
+            <div class="shortcut-item">
+              <kbd>Ctrl</kbd> + <kbd>E</kbd>
+              <span>Export</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <h6 class="text-muted text-uppercase fw-bold mb-3">Application</h6>
+            <div class="shortcut-item">
+              <kbd>Ctrl</kbd> + <kbd>,</kbd>
+              <span>Preferences</span>
+            </div>
+            <div class="shortcut-item">
+              <kbd>Esc</kbd>
+              <span>Close Modals</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="hide()">
+          <i class="bi bi-check me-1"></i> Got It!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isVisible" (click)="hide()"></div>

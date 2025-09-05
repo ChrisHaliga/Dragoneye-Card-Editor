@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { PreferencesService } from '../../services/preferences.service';
 
 @Component({
   selector: 'app-getting-started-modal',
@@ -7,13 +8,16 @@ import { Component } from '@angular/core';
   standalone: false
 })
 export class GettingStartedModalComponent {
-  public isVisible = false;
+  isVisible = false;
 
-  public show(): void {
+  constructor(private preferencesService: PreferencesService) {}
+
+  show(): void {
     this.isVisible = true;
   }
 
-  public hide(): void {
+  hide(): void {
     this.isVisible = false;
+    this.preferencesService.updatePreferences({ showWelcomeOnStartup: false });
   }
 }

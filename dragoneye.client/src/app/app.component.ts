@@ -1,5 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +7,8 @@ import { Component, OnInit } from '@angular/core';
   standalone: false,
   styleUrl: './app.component.css'
 })
-export class AppComponent { }
+export class AppComponent {
+  constructor(private themeService: ThemeService) {
+    this.themeService.initializeTheme();
+  }
+}

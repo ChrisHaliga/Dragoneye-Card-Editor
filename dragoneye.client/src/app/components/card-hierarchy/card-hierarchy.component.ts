@@ -1,7 +1,13 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CardData, CardService } from '../../services/card.service';
+import { StateService } from '../../services/state.service';
 
 export interface CardSelection {
+  groupIndex: number;
+  cardIndex: number;
+}
+
+export interface DeleteCardEvent {
   groupIndex: number;
   cardIndex: number;
 }
@@ -18,16 +24,21 @@ export class CardHierarchyComponent {
   @Input() selectedCardIndex = 0;
   @Output() cardSelected = new EventEmitter<CardSelection>();
   @Output() cardAdded = new EventEmitter<CardSelection>();
+  @Output() deleteCard = new EventEmitter<DeleteCardEvent>();
+  @Output() deleteGroup = new EventEmitter<number>();
 
   editingGroupIndex = -1;
 
-  constructor(public cardService: CardService) {}
+  constructor(
+    public cardService: CardService,
+    private stateService: StateService
+  ) {}
 
   onToggleGroup(index: number): void { this.cardService.toggleGroup(index); }
   onAddGroup(): void { this.cardService.addGroup(); }
-  onRemoveGroup(index: number): void { this.cardService.removeGroup(index); }
+  onRemoveGroup(index: number): void { this.deleteGroup.emit(index); }
   onDuplicateGroup(index: number): void { this.cardService.duplicateGroup(index); }
-  onRemoveCard(groupIndex: number, cardIndex: number): void { this.cardService.removeCard(groupIndex, cardIndex); }
+  onRemoveCard(groupIndex: number, cardIndex: number): void { this.deleteCard.emit({ groupIndex, cardIndex }); }
   onDuplicateCard(groupIndex: number, cardIndex: number): void { this.cardService.duplicateCard(groupIndex, cardIndex); }
 
   startEditingGroup(index: number, event: Event): void {
@@ -44,7 +55,7 @@ export class CardHierarchyComponent {
   }
 
   onAddCard(groupIndex: number): void {
-    this.cardService.addCard(groupIndex);
+    this.stateService.addCard(groupIndex);
     this.cardAdded.emit({ groupIndex, cardIndex: this.cardData.groups[groupIndex].cards.length - 1 });
   }
 }

@@ -1,0 +1,132 @@
+<div class="modal" [class.show]="isVisible" [style.display]="isVisible ? 'block' : 'none'">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-gear me-2"></i>Preferences
+        </h5>
+        <button type="button" class="btn-close" (click)="cancel()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="preferences-content">
+          
+          <!-- Editor Settings -->
+          <div class="preference-section mb-4">
+            <h6><i class="bi bi-pencil-square me-2"></i>Editor Settings</h6>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Undo Levels</label>
+                <div class="input-group">
+                  <input type="number" class="form-control" [(ngModel)]="preferences.undoLevels" min="1" max="50">
+                  <span class="input-group-text">steps</span>
+                </div>
+                <small class="form-text text-muted">Number of actions you can undo (1-50)</small>
+              </div>
+              
+              <div class="col-md-6">
+                <label class="form-label">Default Card Type</label>
+                <select class="form-select" [(ngModel)]="preferences.defaultCardType">
+                  <option value="Action">Action</option>
+                  <option value="Passive">Passive</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Default Element</label>
+                <select class="form-select" [(ngModel)]="preferences.defaultElement">
+                  <option *ngFor="let element of availableElements" [value]="element.key">
+                    {{element.symbol}} {{element.name}}
+                  </option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- File Settings -->
+          <div class="preference-section mb-4">
+            <h6><i class="bi bi-floppy me-2"></i>File Settings</h6>
+            
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="preferences.autoSave" id="autoSaveCheck">
+              <label class="form-check-label" for="autoSaveCheck">
+                Enable Auto-Save
+              </label>
+            </div>
+
+            <div class="row mb-3" *ngIf="preferences.autoSave">
+              <div class="col-md-6">
+                <label class="form-label">Auto-Save Interval</label>
+                <div class="input-group">
+                  <input type="number" class="form-control" [(ngModel)]="preferences.autoSaveInterval" min="1" max="60">
+                  <span class="input-group-text">minutes</span>
+                </div>
+                <small class="form-text text-muted">How often to automatically save (1-60 minutes)</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Appearance Settings -->
+          <div class="preference-section mb-4">
+            <h6><i class="bi bi-palette me-2"></i>Appearance</h6>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Theme</label>
+                <select class="form-select" [(ngModel)]="preferences.theme" (ngModelChange)="onThemeChange()">
+                  <option value="auto">Auto (System)</option>
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="preferences.showTooltips" id="tooltipsCheck">
+              <label class="form-check-label" for="tooltipsCheck">
+                Show Tooltips
+              </label>
+            </div>
+          </div>
+
+          <!-- Behavior Settings -->
+          <div class="preference-section mb-4">
+            <h6><i class="bi bi-shield-check me-2"></i>Behavior</h6>
+            
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="preferences.confirmDeleteActions" id="confirmDeleteCheck">
+              <label class="form-check-label" for="confirmDeleteCheck">
+                Confirm Delete Actions
+              </label>
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="preferences.showWelcomeOnStartup" id="welcomeCheck">
+              <label class="form-check-label" for="welcomeCheck">
+                Show Welcome Guide on Startup
+              </label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="resetToDefaults()">
+          <i class="bi bi-arrow-clockwise me-1"></i> Reset to Defaults
+        </button>
+        <div class="ms-auto">
+          <button type="button" class="btn btn-secondary me-2" (click)="cancel()">Cancel</button>
+          <button type="button" class="btn btn-primary" (click)="savePreferences()">
+            <i class="bi bi-check me-1"></i> Save Preferences
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isVisible" (click)="cancel()"></div>

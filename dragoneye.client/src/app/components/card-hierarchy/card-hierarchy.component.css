@@ -14,17 +14,19 @@
 }
 
 .group-section {
-  border: 1px solid #dee2e6;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   overflow: hidden;
+  margin-bottom: 0.5rem;
 }
 
 .group-header {
-  background: #f8f9fa;
+  background: var(--section-bg);
   padding: 0.75rem;
   display: flex;
   align-items: center;
   transition: background-color 0.2s;
+  color: var(--text-primary);
 }
 
 .group-header:not(.editing) .group-header-content {
@@ -35,11 +37,11 @@
 }
 
 .group-header:not(.editing):hover {
-  background: #e9ecef;
+  background: var(--hover-secondary);
 }
 
 .group-header.editing {
-  background: #e3f2fd;
+  background: var(--active-bg);
 }
 
 .group-name-display {
@@ -51,8 +53,8 @@
 
 .group-name-input {
   flex: 1;
-  border: 2px solid #007bff;
-  background: white;
+  border: 2px solid var(--focus-color);
+  background: var(--bg-primary);
   font-weight: 500;
   padding: 0.25rem 0.5rem;
   margin-right: 0.5rem;
@@ -71,8 +73,8 @@
 
 .group-content {
   padding: 0.75rem;
-  background: white;
-  border-top: 1px solid #e9ecef;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
 }
 
 .card-item {
@@ -83,18 +85,18 @@
   margin-bottom: 0.5rem;
   transition: all 0.2s ease;
   border-left: 3px solid transparent;
-  background: #f8f9fa;
+  background: var(--section-bg);
+  color: var(--text-primary);
 }
 
 .card-item:hover {
-  background: #e9ecef;
+  background: var(--hover-secondary);
   transform: translateX(2px);
 }
 
 .card-item.active {
-  background: #e3f2fd;
-  border-left-color: #007bff;
-  box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+  background: var(--active-bg);
+  border-left-color: var(--focus-color);
 }
 
 .card-item-content {
@@ -114,11 +116,12 @@
 .card-title {
   font-weight: 600;
   margin-bottom: 0.25rem;
+  color: var(--text-primary);
 }
 
 .card-meta {
   font-size: 0.875rem;
-  color: #6c757d;
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   gap: 0.75rem;

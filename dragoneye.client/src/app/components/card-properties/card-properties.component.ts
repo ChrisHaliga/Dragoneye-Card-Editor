@@ -1,5 +1,6 @@
-import { Component, Input, HostListener } from '@angular/core';
-import { Card, CardDetail, CardService } from '../../services/card.service';
+import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { Card, CardService } from '../../services/card.service';
+import { PreferencesService } from '../../services/preferences.service';
 
 @Component({
   selector: 'app-card-properties',
@@ -9,9 +10,14 @@ import { Card, CardDetail, CardService } from '../../services/card.service';
 })
 export class CardPropertiesComponent {
   @Input() card!: Card;
+  @Output() deleteDetail = new EventEmitter<number>();
+  
   selectedDetailIndex = -1;
 
-  constructor(public cardService: CardService) {}
+  constructor(
+    public cardService: CardService,
+    private preferencesService: PreferencesService
+  ) {}
 
   @HostListener('document:keydown', ['$event'])
   onKeyDown(event: KeyboardEvent): void {
@@ -32,7 +38,9 @@ export class CardPropertiesComponent {
     (event.target as HTMLInputElement).value = '';
   }
 
-  removeImage(): void { this.card.backgroundImage = ''; }
+  removeImage(): void { 
+    this.card.backgroundImage = '';
+  }
 
   addDetail(): void {
     const newDetail = this.cardService.addDetail(this.card);
@@ -40,8 +48,13 @@ export class CardPropertiesComponent {
   }
 
   removeDetail(index: number): void {
-    this.cardService.removeDetail(this.card, index);
-    if (this.selectedDetailIndex >= this.card.details.length) this.selectedDetailIndex = -1;
+    const shouldConfirm = this.preferencesService.preferences.confirmDeleteActions;
+    if (shouldConfirm) {
+      this.deleteDetail.emit(index);
+    } else {
+      this.cardService.removeDetail(this.card, index);
+      if (this.selectedDetailIndex >= this.card.details.length) this.selectedDetailIndex = -1;
+    }
   }
 
   duplicateDetail(index: number): void {
