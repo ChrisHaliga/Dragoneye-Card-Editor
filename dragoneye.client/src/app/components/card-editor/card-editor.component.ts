@@ -161,6 +161,10 @@ export class CardEditorComponent implements OnInit, OnDestroy {
     this.stateService.exportAsSVG(this.currentCard?.title);
   }
 
+  addNewGroup(): void {
+    this.cardService.addGroup();
+  }
+
   importFile(event: Event): void {
     this.stateService.importFile(event);
   }
@@ -267,6 +271,12 @@ export class CardEditorComponent implements OnInit, OnDestroy {
   onCardSelected(selection: CardSelection): void {
     this.selectedGroupIndex = selection.groupIndex;
     this.selectedCardIndex = selection.cardIndex;
+    
+    // Expand the group if it's collapsed
+    const targetGroup = this.cardData.groups[selection.groupIndex];
+    if (targetGroup && !targetGroup.expanded) {
+      this.cardService.toggleGroup(selection.groupIndex);
+    }
   }
 
   onCardAdded(selection: CardSelection): void {

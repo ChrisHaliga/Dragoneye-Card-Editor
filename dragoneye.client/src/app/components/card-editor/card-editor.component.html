@@ -47,6 +47,9 @@
             <i class="bi bi-arrow-counterclockwise me-2"></i>Redo
           </a></li>
           <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="#" (click)="addNewGroup(); $event.preventDefault()">
+            <i class="bi bi-plus-circle me-2"></i>New Group
+          </a></li>
           <li><a class="dropdown-item" href="#" [class.disabled]="!currentCard" (click)="duplicateCurrentCard(); $event.preventDefault()">
             <i class="bi bi-files me-2"></i>Duplicate Card
           </a></li>
@@ -107,7 +110,7 @@
 <!-- Main Layout -->
 <div class="main-layout">
   <!-- Side Panel (Primary) - Card Hierarchy -->
-  <div class="side-panel" [class.closed]="!isEditorOpen">
+  <div class="side-panel" *ngIf="isEditorOpen">
     <div class="panel-header">
       <span>Card Hierarchy</span>
       <button class="btn btn-sm btn-outline-secondary" (click)="toggleEditor()">
@@ -116,7 +119,7 @@
       </button>
     </div>
 
-    <div class="panel-content" *ngIf="isEditorOpen">
+    <div class="panel-content">
       <app-card-hierarchy 
         [cardData]="cardData"
         [selectedGroupIndex]="selectedGroupIndex"
@@ -134,7 +137,13 @@
     <app-card-display 
       [card]="currentCard" 
       [elementSymbol]="currentElementSymbol" 
-      [noCardMessage]="noCardMessage">
+      [noCardMessage]="noCardMessage"
+      [selectedGroupIndex]="selectedGroupIndex"
+      [selectedCardIndex]="selectedCardIndex"
+      (cardSelected)="onCardSelected($event)"
+      (cardAdded)="onCardAdded($event)"
+      (deleteCard)="onDeleteCard($event.groupIndex, $event.cardIndex)"
+      (deleteGroup)="onDeleteGroup($event)">
     </app-card-display>
 
     <!-- Bottom Panel (Secondary) - Card Details -->

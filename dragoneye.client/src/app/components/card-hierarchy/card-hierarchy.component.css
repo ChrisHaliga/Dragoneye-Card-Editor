@@ -107,6 +107,9 @@
 .card-item-actions {
   opacity: 0;
   transition: opacity 0.2s;
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
 }
 
 .card-item:hover .card-item-actions {

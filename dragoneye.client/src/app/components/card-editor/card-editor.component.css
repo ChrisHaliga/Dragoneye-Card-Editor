@@ -111,11 +111,6 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  transition: margin-left 0.3s ease;
-}
-
-.side-panel.closed {
-  margin-left: -310px;
 }
 
 .side-panel .panel-content {
@@ -142,6 +137,8 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 50px;
+  width: 100%;
 }
 
 .bottom-panel.closed {
@@ -149,8 +146,9 @@
 }
 
 .bottom-panel:not(.closed) {
-  flex: 1;
-  min-height: 0;
+  height: 40vh;
+  max-height: 600px;
+  min-height: 300px;
 }
 
 .bottom-panel .panel-content {
@@ -158,6 +156,19 @@
   overflow-y: auto;
   flex: 1;
   min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Ensure all form elements fit properly */
+.bottom-panel .form-control,
+.bottom-panel .form-select,
+.bottom-panel .form-textarea,
+.bottom-panel input,
+.bottom-panel select,
+.bottom-panel textarea {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Panel Headers */
@@ -228,9 +239,27 @@
 
   .bottom-panel:not(.closed) {
     max-height: 50vh;
+    width: 100%;
   }
 
   .bottom-panel .panel-content {
     max-height: calc(50vh - 50px);
+    padding: 0.75rem;
+    overflow-x: hidden;
+  }
+
+  .bottom-panel .form-control,
+  .bottom-panel .form-select,
+  .bottom-panel .form-textarea,
+  .bottom-panel input,
+  .bottom-panel select,
+  .bottom-panel textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    width: 100%;
+  }
+
+  .panel-header {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
   }
 }

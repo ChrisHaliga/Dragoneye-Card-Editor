@@ -8,7 +8,13 @@
   overflow: hidden;
   position: relative;
   cursor: grab;
-  min-height: 400px;
+  min-height: 200px;
+  max-height: 70vh;
+  touch-action: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .card-display:active {
@@ -28,6 +34,13 @@
   padding: 0.5rem;
   border-radius: 6px;
   box-shadow: var(--shadow);
+  opacity: 0.25;
+  transition: opacity 0.3s ease;
+}
+
+.zoom-controls:hover,
+.zoom-controls:focus-within {
+  opacity: 1;
 }
 
 .zoom-level {
@@ -41,17 +54,290 @@
   width: 100%;
   height: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-start;
+  align-items: flex-start;
   transform-origin: center;
   transition: transform 0.1s ease-out;
+  overflow: visible;
 }
 
-.displayed-card {
-  max-width: 400px;
-  width: 100%;
-  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.25));
+.groups-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem 1rem 1rem 1rem;
+  min-width: 100%;
+}
+
+.group-display {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1.5rem;
+  backdrop-filter: blur(5px);
+  margin-bottom: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.group-display:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.group-label {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.group-label:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.group-label .edit-icon {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  font-size: 0.875rem;
+}
+
+.group-label:hover .edit-icon {
+  opacity: 1;
+}
+
+.group-name-input {
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #007bff;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+  outline: none;
+  min-width: 200px;
+}
+
+.group-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-right: 0.5rem;
+}
+
+.group-actions .btn {
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.group-actions .btn:hover {
+  transform: translateY(-2px);
+}
+
+.card-container {
+  position: relative;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+  width: 250px;
+}
+
+.card-container:hover {
+  transform: translateY(-5px);
+}
+
+.card-container.editing-card {
+  /* Use outline instead of border to avoid affecting layout */
+  outline: 3px solid #ffd700;
+  outline-offset: -3px;
+  border-radius: 15px;
+  background: rgba(255, 215, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 768px) {
+  .card-display {
+    padding: 1rem;
+    min-height: 300px;
+  }
+
+  .groups-container {
+    gap: 1rem;
+    padding: 1rem 0.5rem;
+  }
+
+  .group-cards {
+    gap: 1rem;
+  }
+
+  .group-card {
+    width: 200px;
+  }
+
+  .group-label {
+    font-size: 1rem;
+  }
+
+  .add-card-container {
+    width: 200px;
+  }
+}
+
+@media (max-width: 576px) {
+  .card-display {
+    padding: 0.5rem;
+  }
+
+  .groups-container {
+    padding: 1rem 0.25rem;
+  }
+
+  .group-cards {
+    gap: 0.75rem;
+  }
+
+  .group-card {
+    width: 180px;
+  }
+
+  .add-card-container {
+    width: 180px;
+  }
+
+  .zoom-controls {
+    flex-direction: column;
+    gap: 0.25rem;
+    right: 0.5rem;
+    top: 0.5rem;
+  }
+}
+
+.edit-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffd700;
+  color: #333;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 15;
+  white-space: nowrap;
+}
+
+.group-card {
+  width: 250px;
+  height: auto;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.2));
   user-select: none;
+  transition: filter 0.3s ease;
+}
+
+.card-container:hover .group-card {
+  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.3));
+}
+
+.card-delete-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 15;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  padding: 0;
+  font-size: 0.75rem;
+}
+
+.card-container:hover .card-delete-btn {
+  opacity: 1;
+}
+
+.add-card-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 250px;
+  height: 350px;
+}
+
+.add-card-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: white;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  width: 100%;
+  height: 350px;
+  justify-content: center;
+}
+
+.add-card-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-5px);
+}
+
+.add-card-btn i {
+  font-size: 2rem;
+}
+
+.add-group-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.add-group-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  color: white;
+  padding: 1.5rem 3rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.add-group-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: translateY(-3px);
+}
+
+.add-group-btn i {
+  font-size: 1.5rem;
 }
 
 .no-selection {
@@ -61,6 +347,7 @@
   border-radius: 12px;
   backdrop-filter: blur(10px);
   padding: 2rem;
+  margin: auto;
 }
 
 .no-selection h5 {
@@ -78,8 +365,25 @@
     min-height: 300px;
   }
 
-  .displayed-card {
-    max-width: 280px;
+  .groups-container {
+    gap: 1rem;
+    padding: 1rem 0.5rem;
+  }
+
+  .group-cards {
+    gap: 1rem;
+  }
+
+  .group-card {
+    width: 200px;
+  }
+
+  .group-label {
+    font-size: 1rem;
+  }
+
+  .add-card-container {
+    width: 200px;
   }
 }
 
@@ -88,12 +392,35 @@
     padding: 0.5rem;
   }
 
-  .displayed-card {
-    max-width: 240px;
+  .groups-container {
+    padding: 1rem 0.25rem;
+  }
+
+  .group-cards {
+    gap: 0.75rem;
+  }
+
+  .group-card {
+    width: 180px;
+  }
+
+  .add-card-container {
+    width: 180px;
   }
 
   .zoom-controls {
     flex-direction: column;
     gap: 0.25rem;
+    right: 0.5rem;
+    top: 0.5rem;
   }
+}
+
+.group-cards {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding-top: 1rem;
 }

@@ -47,15 +47,17 @@
           </div>
         </div>
 
-        <div class="dropdown card-item-actions">
-          <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-            <i class="bi bi-three-dots-vertical"></i>
-          </button>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#" (click)="onDuplicateCard(gi, ci); $event.preventDefault()">Duplicate</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item text-danger" href="#" (click)="onRemoveCard(gi, ci); $event.preventDefault()">Delete</a></li>
-          </ul>
+        <div class="card-item-actions">
+          <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+              <i class="bi bi-three-dots-vertical"></i>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#" (click)="onDuplicateCard(gi, ci); $event.preventDefault()">Duplicate</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="#" (click)="onRemoveCard(gi, ci); $event.preventDefault()">Delete</a></li>
+            </ul>
+          </div>
         </div>
       </div>
 

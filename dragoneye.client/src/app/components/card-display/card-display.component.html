@@ -1,5 +1,14 @@
-<div class="card-display" (mousedown)="onMouseDown($event)" (wheel)="onWheel($event)">
-  <div class="zoom-controls">
+<div class="card-display" 
+     (mousedown)="onMouseDown($event)" 
+     (wheel)="onWheel($event)" 
+     (click)="onViewportClick($event)"
+     (touchstart)="onTouchStart($event)"
+     style="touch-action: none;">
+  <div class="zoom-controls" 
+       (mouseenter)="onZoomControlsHover(true)"
+       (mouseleave)="onZoomControlsHover(false)"
+       (touchstart)="onZoomControlsTouch(true)"
+       (touchend)="onZoomControlsTouch(false)">
     <button class="btn btn-sm btn-outline-secondary" (click)="zoomOut()">
       <i class="bi bi-dash"></i>
     </button>
@@ -7,87 +16,167 @@
     <button class="btn btn-sm btn-outline-secondary" (click)="zoomIn()">
       <i class="bi bi-plus"></i>
     </button>
-    <button class="btn btn-sm btn-outline-secondary ms-2" (click)="resetView()">
+    <button class="btn btn-sm btn-outline-secondary ms-2" (click)="focusOnSelectedCard()">
       <i class="bi bi-house"></i>
     </button>
   </div>
 
   <div class="card-viewport" #cardViewport>
-    <svg *ngIf="card" viewBox="0 0 200 280" class="displayed-card">
-      <defs>
-        <radialGradient id="cardBg" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" style="stop-color:#f4f1e8" />
-          <stop offset="100%" style="stop-color:#d4c4a0" />
-        </radialGradient>
-        <filter id="shadow">
-          <feDropShadow dx="2" dy="3" stdDeviation="2" flood-opacity="0.3" />
-        </filter>
-        <clipPath id="imageClip">
-          <rect x="20" y="70" width="160" height="185" />
-        </clipPath>
-      </defs>
+    <div class="groups-container">
+      <div *ngFor="let group of cardService.cardData.groups; let groupIndex = index" class="group-display">
+        <!-- Editable group name -->
+        <div class="group-header">
+          <input *ngIf="editingGroupIndex === groupIndex" 
+                 type="text" 
+                 class="group-name-input"
+                 [(ngModel)]="group.name" 
+                 (blur)="onGroupNameBlur()" 
+                 (keydown)="onGroupNameKeyDown($event)"
+                 (click)="$event.stopPropagation()">
+          <div *ngIf="editingGroupIndex !== groupIndex" 
+               class="group-label" 
+               (click)="startEditingGroup(groupIndex); $event.stopPropagation()">
+            {{ group.name }}
+            <i class="bi bi-pencil edit-icon"></i>
+          </div>
+          
+          <!-- Group actions -->
+          <div class="group-actions">
+            <button class="btn btn-sm btn-outline-light" 
+                    (click)="duplicateGroup(groupIndex)"
+                    title="Duplicate Group">
+              <i class="bi bi-files"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger" 
+                    (click)="onDeleteGroup(groupIndex)"
+                    [disabled]="cardService.cardData.groups.length === 1"
+                    title="Delete Group">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
 
-      <rect x="10" y="10" width="180" height="260" fill="url(#cardBg)" stroke="#8b7355" stroke-width="2" filter="url(#shadow)" />
-      <rect x="20" y="20" width="145" height="24" fill="white" stroke="#666" stroke-width="1" />
-      
-      <text x="25" y="36" font-size="11" font-weight="bold" fill="#333" font-family="serif">{{ card.title }}</text>
+        <div class="group-cards">
+          <!-- Existing cards -->
+          <div *ngFor="let card of group.cards; let cardIndex = index" 
+               class="card-container"
+               [class.editing-card]="isSelectedCard(groupIndex, cardIndex)"
+               (click)="onCardClick(groupIndex, cardIndex)">
+            
+            <!-- Edit indicator for selected card -->
+            <div *ngIf="isSelectedCard(groupIndex, cardIndex)" class="edit-badge">EDITING</div>
+            
+            <!-- Card delete button -->
+            <button class="card-delete-btn btn btn-sm btn-danger" 
+                    (click)="onDeleteCard(groupIndex, cardIndex, $event)"
+                    title="Delete Card">
+              <i class="bi bi-x"></i>
+            </button>
+            
+            <svg viewBox="0 0 200 280" class="group-card">
+              <defs>
+                <radialGradient [id]="'groupCardBg' + groupIndex + cardIndex" cx="50%" cy="40%" r="60%">
+                  <stop offset="0%" style="stop-color:#f4f1e8" />
+                  <stop offset="100%" style="stop-color:#d4c4a0" />
+                </radialGradient>
+                <filter [id]="'groupCardShadow' + groupIndex + cardIndex">
+                  <feDropShadow dx="2" dy="3" stdDeviation="2" flood-opacity="0.3" />
+                </filter>
+              </defs>
 
-      <circle cx="165" cy="32" r="16" fill="white" stroke="#666" stroke-width="1" />
-      <text x="165" y="38" text-anchor="middle" font-size="16" fill="#333">{{ elementSymbol }}</text>
+              <rect x="10" y="10" width="180" height="260" 
+                    [attr.fill]="'url(#groupCardBg' + groupIndex + cardIndex + ')'" 
+                    stroke="#8b7355" stroke-width="2" 
+                    [attr.filter]="'url(#groupCardShadow' + groupIndex + cardIndex + ')'"/>
+              <rect x="20" y="20" width="145" height="24" fill="white" stroke="#666" stroke-width="1" />
+              
+              <text x="25" y="36" font-size="11" font-weight="bold" fill="#333" font-family="serif">
+                {{ card.title }}
+              </text>
 
-      <rect x="25" y="50" width="40" height="12" fill="#333" />
-      <text x="45" y="59" text-anchor="middle" fill="white" font-size="8" font-family="serif">
-        {{ (card.type || 'CREATURE').toUpperCase() }}
-      </text>
+              <circle cx="165" cy="32" r="16" fill="white" stroke="#666" stroke-width="1" />
+              <text x="165" y="38" text-anchor="middle" font-size="16" fill="#333">
+                {{ getElementSymbol(card.element) }}
+              </text>
 
-      <!-- Background image extends all the way down to bottom of description box -->
-      <rect x="20" y="70" width="160" height="185" fill="#f8f9fa" stroke="#ddd" stroke-width="1" />
-      <image *ngIf="card.backgroundImage" [attr.href]="card.backgroundImage" x="20" y="70" width="160" height="185" preserveAspectRatio="xMidYMid slice" clip-path="url(#imageClip)" />
-      <text *ngIf="!card.backgroundImage" x="100" y="160" text-anchor="middle" fill="#999" font-size="10">No Image</text>
+              <rect x="25" y="50" width="40" height="12" fill="#333" />
+              <text x="45" y="59" text-anchor="middle" fill="white" font-size="8" font-family="serif">
+                {{ (card.type || 'CREATURE').toUpperCase() }}
+              </text>
 
-      <!-- Description box with higher position and opacity -->
-      <rect x="20" y="180" width="160" height="75" fill="white" fill-opacity="0.8" stroke="#666" stroke-width="1" />
+              <rect x="20" y="70" width="160" height="185" fill="#f8f9fa" stroke="#ddd" stroke-width="1" />
+              <image *ngIf="card.backgroundImage" 
+                     [attr.href]="card.backgroundImage" 
+                     x="20" y="70" width="160" height="185" 
+                     preserveAspectRatio="xMidYMid slice" />
+              <text *ngIf="!card.backgroundImage" x="100" y="160" text-anchor="middle" fill="#999" font-size="10">
+                No Image
+              </text>
 
-      <!-- Dynamic detail layout -->
-      <g *ngFor="let layout of detailLayouts; let i = index">
-        <!-- AP/SP circles -->
-        <circle *ngFor="let ap of getCircles(layout.detail.apCost); let j = index"
-                [attr.cx]="28 + (j * 8)" 
-                [attr.cy]="getDetailCircleY(i)" 
-                r="3" fill="white" stroke="#333" stroke-width="0.5" />
-        <circle *ngFor="let sp of getCircles(layout.detail.spCost); let j = index"
-                [attr.cx]="28 + ((layout.detail.apCost + j) * 8)" 
-                [attr.cy]="getDetailCircleY(i)" 
-                r="3" fill="#333" stroke="#333" stroke-width="0.5" />
+              <rect x="20" y="180" width="160" height="75" fill="white" fill-opacity="0.8" stroke="#666" stroke-width="1" />
 
-        <!-- Detail title -->
-        <text [attr.x]="layout.titleX" 
-              [attr.y]="getDetailTitleY(i)" 
-              font-size="7" fill="#333" font-family="serif" font-weight="bold">
-          {{ layout.detail.name }}
-        </text>
+              <!-- Dynamic detail layout for each card -->
+              <g *ngFor="let layout of getDetailLayoutsForCard(card); let i = index">
+                <circle *ngFor="let ap of getCircles(layout.detail.apCost); let j = index"
+                        [attr.cx]="28 + (j * 8)" 
+                        [attr.cy]="layout.yPosition" 
+                        r="3" fill="white" stroke="#333" stroke-width="0.5" />
+                <circle *ngFor="let sp of getCircles(layout.detail.spCost); let j = index"
+                        [attr.cx]="28 + ((layout.detail.apCost + j) * 8)" 
+                        [attr.cy]="layout.yPosition" 
+                        r="3" fill="#333" stroke="#333" stroke-width="0.5" />
 
-        <!-- Dynamic multi-line text -->
-        <text x="28" [attr.y]="getDetailTextY(i)" font-size="6" fill="#333" font-family="serif">
-          <tspan *ngFor="let line of layout.lines; let lineIndex = index"
-                 x="28" 
-                 [attr.dy]="lineIndex === 0 ? 0 : 7">
-            {{ line.text }}
-          </tspan>
-        </text>
-      </g>
+                <text [attr.x]="layout.titleX" 
+                      [attr.y]="layout.yPosition + 3" 
+                      font-size="7" fill="#333" font-family="serif" font-weight="bold">
+                  {{ layout.detail.name }}
+                </text>
 
-      <!-- Show count of hidden details -->
-      <text *ngIf="getHiddenDetailsCount() > 0" 
-            x="100" y="250" 
-            text-anchor="middle" fill="#666" font-size="8" font-family="serif">
-        +{{ getHiddenDetailsCount() }} more...
-      </text>
-    </svg>
+                <text x="28" [attr.y]="layout.yPosition + 11" font-size="6" fill="#333" font-family="serif">
+                  <tspan *ngFor="let line of layout.lines; let lineIndex = index"
+                         x="28" 
+                         [attr.dy]="lineIndex === 0 ? 0 : 7">
+                    {{ line.text }}
+                  </tspan>
+                </text>
+              </g>
 
-    <div *ngIf="!card" class="no-selection">
-      <h5>No Card Selected</h5>
-      <p>{{ noCardMessage }}</p>
+              <text *ngIf="getHiddenDetailsCountForCard(card) > 0" 
+                    x="100" y="245" text-anchor="middle" fill="#666" font-size="8" font-family="serif">
+                +{{ getHiddenDetailsCountForCard(card) }} more...
+              </text>
+            </svg>
+          </div>
+
+          <!-- Add card button -->
+          <div class="add-card-container">
+            <button class="add-card-btn" 
+                    (click)="addCard(groupIndex)"
+                    title="Add New Card">
+              <i class="bi bi-plus-circle"></i>
+              <span>Add Card</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add group button -->
+      <div class="add-group-container">
+        <button class="add-group-btn" 
+                (click)="addGroup()"
+                title="Add New Group">
+          <i class="bi bi-plus-circle"></i>
+          <span>Add Group</span>
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="!cardService.hasCards" class="no-selection">
+      <h5>No Cards Available</h5>
+      <p>Create some cards to get started!</p>
+      <button class="btn btn-primary mt-3" (click)="addGroup()">
+        <i class="bi bi-plus-circle me-2"></i>Create First Group
+      </button>
     </div>
   </div>
 </div>

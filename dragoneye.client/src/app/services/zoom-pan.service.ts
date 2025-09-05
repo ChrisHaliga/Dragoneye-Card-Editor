@@ -39,11 +39,64 @@ export class ZoomPanService {
 
   zoom(event: WheelEvent): void {
     event.preventDefault();
-    this.adjustZoom(event.deltaY > 0 ? 0.9 : 1.1);
+    const factor = event.deltaY > 0 ? 0.9 : 1.1;
+    this.adjustZoomAtPoint(factor, event.clientX, event.clientY);
   }
 
-  zoomIn(): void { this.adjustZoom(1.1); }
-  zoomOut(): void { this.adjustZoom(0.9); }
+  zoomIn(): void {
+    // For button clicks, zoom toward the center of the viewport
+    if (this.viewportRef) {
+      const rect = this.viewportRef.nativeElement.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      this.adjustZoomAtPoint(1.1, centerX, centerY);
+    }
+  }
+
+  zoomOut(): void {
+    // For button clicks, zoom toward the center of the viewport
+    if (this.viewportRef) {
+      const rect = this.viewportRef.nativeElement.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      this.adjustZoomAtPoint(0.9, centerX, centerY);
+    }
+  }
+
+  // Public method for zooming at a specific point
+  adjustZoomAtPoint(factor: number, clientX: number, clientY: number): void {
+    if (!this.viewportRef) return;
+
+    const rect = this.viewportRef.nativeElement.getBoundingClientRect();
+
+    // Convert client coordinates to viewport-relative coordinates
+    const viewportX = clientX - rect.left;
+    const viewportY = clientY - rect.top;
+
+    // Calculate the point in the transformed coordinate system
+    const pointX = (viewportX - this.translateX) / this.scale;
+    const pointY = (viewportY - this.translateY) / this.scale;
+
+    // Calculate new scale
+    const newScale = Math.max(this.MIN_SCALE, Math.min(this.MAX_SCALE, this.scale * factor));
+
+    // Calculate new translation to keep the point under the cursor
+    const newTranslateX = viewportX - pointX * newScale;
+    const newTranslateY = viewportY - pointY * newScale;
+
+    // Update values
+    this.scale = newScale;
+    this.translateX = newTranslateX;
+    this.translateY = newTranslateY;
+
+    this.updateTransform();
+  }
+
+  private adjustZoom(factor: number): void {
+    // Legacy method - kept for compatibility but should use adjustZoomAtPoint instead
+    this.scale = Math.max(this.MIN_SCALE, Math.min(this.MAX_SCALE, this.scale * factor));
+    this.updateTransform();
+  }
 
   resetView(): void {
     this.scale = 1;
@@ -52,8 +105,10 @@ export class ZoomPanService {
     this.updateTransform();
   }
 
-  private adjustZoom(factor: number): void {
-    this.scale = Math.max(this.MIN_SCALE, Math.min(this.MAX_SCALE, this.scale * factor));
+  setTransform(newScale: number, newTranslateX: number, newTranslateY: number): void {
+    this.scale = Math.max(this.MIN_SCALE, Math.min(this.MAX_SCALE, newScale));
+    this.translateX = newTranslateX;
+    this.translateY = newTranslateY;
     this.updateTransform();
   }
 

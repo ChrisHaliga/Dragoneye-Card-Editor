@@ -15,6 +15,7 @@ namespace Dragoneye.Server.Models
         public string Element { get; set; } = string.Empty;
         public string? BackgroundImage { get; set; }
         public List<CardDetail> Details { get; set; } = new();
+        public bool Pinned { get; set; } = false;
     }
 
     public class CardGroup
