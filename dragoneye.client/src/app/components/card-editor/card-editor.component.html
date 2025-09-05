@@ -131,7 +131,11 @@
 
   <!-- Main Content Area -->
   <div class="content-area">
-    <app-card-display [card]="currentCard" [elementSymbol]="currentElementSymbol" [noCardMessage]="noCardMessage"></app-card-display>
+    <app-card-display 
+      [card]="currentCard" 
+      [elementSymbol]="currentElementSymbol" 
+      [noCardMessage]="noCardMessage">
+    </app-card-display>
 
     <!-- Bottom Panel (Secondary) - Card Details -->
     <div class="bottom-panel" [class.closed]="!isBottomPanelOpen">

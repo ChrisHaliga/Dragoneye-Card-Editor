@@ -50,7 +50,7 @@
       <div *ngFor="let detail of card.details; let i = index" class="detail-section mb-2">
         <div class="detail-summary" (click)="selectDetail(i)" [class.selected]="selectedDetailIndex === i">
           <div class="detail-title-row">
-            <span class="detail-title-text">{{ detail.type || 'Unnamed Detail' }}</span>
+            <span class="detail-title-text">{{ detail.name || 'Unnamed Detail' }}</span>
             <div class="detail-costs-compact">
               <span class="cost-compact ap">{{ detail.apCost }}AP</span>
               <span class="cost-compact sp">{{ detail.spCost }}SP</span>
@@ -73,8 +73,8 @@
         <div class="detail-content" *ngIf="selectedDetailIndex === i">
           <div class="row mb-3">
             <div class="col">
-              <label class="form-label">Action Type</label>
-              <input type="text" class="form-control form-control-sm" [(ngModel)]="detail.type" placeholder="e.g., Attack, Spell, Heal">
+              <label class="form-label">Name</label>
+              <input type="text" class="form-control form-control-sm" [(ngModel)]="detail.name" placeholder="e.g., Attack, Spell, Heal">
             </div>
             <div class="col-auto">
               <label class="form-label">AP Cost</label>

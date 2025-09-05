@@ -48,25 +48,40 @@
       <!-- Description box with higher position and opacity -->
       <rect x="20" y="180" width="160" height="75" fill="white" fill-opacity="0.8" stroke="#666" stroke-width="1" />
 
-      <g *ngFor="let detail of card.details; let i = index">
-        <g *ngIf="i < 3">
-          <circle *ngFor="let ap of getCircles(detail.apCost); let j = index"
-                  [attr.cx]="28 + (j * 8)" [attr.cy]="190 + (i * 18)" r="3" fill="white" stroke="#333" stroke-width="0.5" />
-          <circle *ngFor="let sp of getCircles(detail.spCost); let j = index"
-                  [attr.cx]="28 + ((detail.apCost + j) * 8)" [attr.cy]="190 + (i * 18)" r="3" fill="#333" stroke="#333" stroke-width="0.5" />
+      <!-- Dynamic detail layout -->
+      <g *ngFor="let layout of detailLayouts; let i = index">
+        <!-- AP/SP circles -->
+        <circle *ngFor="let ap of getCircles(layout.detail.apCost); let j = index"
+                [attr.cx]="28 + (j * 8)" 
+                [attr.cy]="getDetailCircleY(i)" 
+                r="3" fill="white" stroke="#333" stroke-width="0.5" />
+        <circle *ngFor="let sp of getCircles(layout.detail.spCost); let j = index"
+                [attr.cx]="28 + ((layout.detail.apCost + j) * 8)" 
+                [attr.cy]="getDetailCircleY(i)" 
+                r="3" fill="#333" stroke="#333" stroke-width="0.5" />
 
-          <text [attr.x]="getDetailTitleX(detail)" [attr.y]="193 + (i * 18)" font-size="7" fill="#333" font-family="serif" font-weight="bold">
-            {{ detail.type }}
-          </text>
+        <!-- Detail title -->
+        <text [attr.x]="layout.titleX" 
+              [attr.y]="getDetailTitleY(i)" 
+              font-size="7" fill="#333" font-family="serif" font-weight="bold">
+          {{ layout.detail.name }}
+        </text>
 
-          <text x="28" [attr.y]="201 + (i * 18)" font-size="6" fill="#333" font-family="serif">
-            {{ detail.details.length > 25 ? detail.details.substring(0, 25) + '...' : detail.details }}
-          </text>
-        </g>
+        <!-- Dynamic multi-line text -->
+        <text x="28" [attr.y]="getDetailTextY(i)" font-size="6" fill="#333" font-family="serif">
+          <tspan *ngFor="let line of layout.lines; let lineIndex = index"
+                 x="28" 
+                 [attr.dy]="lineIndex === 0 ? 0 : 7">
+            {{ line.text }}
+          </tspan>
+        </text>
       </g>
 
-      <text *ngIf="card.details.length > 3" x="100" y="250" text-anchor="middle" fill="#666" font-size="8" font-family="serif">
-        +{{ card.details.length - 3 }} more...
+      <!-- Show count of hidden details -->
+      <text *ngIf="getHiddenDetailsCount() > 0" 
+            x="100" y="250" 
+            text-anchor="middle" fill="#666" font-size="8" font-family="serif">
+        +{{ getHiddenDetailsCount() }} more...
       </text>
     </svg>
 

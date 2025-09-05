@@ -2,7 +2,7 @@ namespace Dragoneye.Server.Models
 {
     public class CardDetail
     {
-        public string Type { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
         public string Details { get; set; } = string.Empty;
         public int ApCost { get; set; }
         public int SpCost { get; set; }

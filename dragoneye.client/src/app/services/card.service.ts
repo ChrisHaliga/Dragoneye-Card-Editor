@@ -4,7 +4,7 @@ import { CardApiService } from './card-api.service';
 import { PreferencesService } from './preferences.service';
 
 export interface CardDetail {
-  type: string;
+  name: string;
   details: string;
   apCost: number;
   spCost: number;
@@ -173,7 +173,7 @@ export class CardService {
       type: prefs.defaultCardType,
       element: prefs.defaultElement,
       backgroundImage: '',
-      details: [{ type: 'Action', details: 'Enter description here', apCost: 1, spCost: 0 }]
+      details: [{ name: 'Action', details: 'Enter description here', apCost: 1, spCost: 0 }]
     };
 
     data.groups = data.groups.map((group, i) => 
@@ -223,7 +223,7 @@ export class CardService {
   }
 
   addDetail(card: Card): CardDetail {
-    const detail: CardDetail = { type: 'New Action', details: 'Enter description here', apCost: 1, spCost: 0 };
+    const detail: CardDetail = { name: 'New Action', details: 'Enter description here', apCost: 1, spCost: 0 };
     
     const data = { ...this.cardData };
     data.groups = data.groups.map(group => ({
@@ -257,7 +257,7 @@ export class CardService {
 
   duplicateDetail(card: Card, index: number): CardDetail {
     const original = card.details[index];
-    const duplicate = { ...original, type: original.type + ' Copy' };
+    const duplicate = { ...original, name: original.name + ' Copy' };
     
     const data = { ...this.cardData };
     data.groups = data.groups.map(group => ({

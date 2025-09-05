@@ -37,11 +37,11 @@ namespace Dragoneye.Server.Controllers
                                 Title = "Flame Strike",
                                 Type = "Spell",
                                 Element = "pyr",
-                                BackgroundImage = "",
+                                BackgroundImage = "https://pbs.twimg.com/media/EFE7BgOVAAAYQoN.jpg",
                                 Details = new List<CardDetail>
                                 {
-                                    new() { Type = "Attack", Details = "Deal 3 damage to target enemy", ApCost = 2, SpCost = 1 },
-                                    new() { Type = "Burn", Details = "Target burns for 2 turns", ApCost = 0, SpCost = 0 }
+                                    new() { Name = "Attack", Details = "Deal 3 damage to target enemy", ApCost = 2, SpCost = 1 },
+                                    new() { Name = "Burn", Details = "Target burns for 2 turns", ApCost = 1, SpCost = 2 }
                                 }
                             },
                             new()
@@ -49,10 +49,10 @@ namespace Dragoneye.Server.Controllers
                                 Title = "Fireball",
                                 Type = "Spell",
                                 Element = "pyr",
-                                BackgroundImage = "",
+                                BackgroundImage = "https://i.redd.it/g2aexsgugxn31.jpg",
                                 Details = new List<CardDetail>
                                 {
-                                    new() { Type = "Spell", Details = "Deal 2 damage to all enemies", ApCost = 3, SpCost = 2 }
+                                    new() { Name = "Spell", Details = "Deal 2 damage to all enemies", ApCost = 3, SpCost = 2 }
                                 }
                             }
                         }
@@ -68,10 +68,10 @@ namespace Dragoneye.Server.Controllers
                                 Title = "Healing Wave",
                                 Type = "Spell",
                                 Element = "hyd",
-                                BackgroundImage = "",
+                                BackgroundImage = "https://yourturndad.com/wp-content/uploads/2019/02/cure-wounds-1.jpg",
                                 Details = new List<CardDetail>
                                 {
-                                    new() { Type = "Heal", Details = "Restore 5 HP to target ally", ApCost = 1, SpCost = 1 }
+                                    new() { Name = "Heal", Details = "Restore 5 HP to target ally", ApCost = 1, SpCost = 3 }
                                 }
                             }
                         }

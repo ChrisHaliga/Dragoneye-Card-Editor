@@ -245,7 +245,7 @@ export class CardEditorComponent implements OnInit, OnDestroy {
     this.pendingDeleteAction = () => {
       this.cardService.removeDetail(this.currentCard!, detailIndex);
     };
-    this.deleteModal?.show(detail.type || 'detail', 'detail');
+    this.deleteModal?.show(detail.name || 'detail', 'detail');
   }
 
   showPreferences(): void {
