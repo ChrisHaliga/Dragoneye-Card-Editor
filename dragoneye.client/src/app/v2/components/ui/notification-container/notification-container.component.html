@@ -1,0 +1,41 @@
+<div class="notification-container">
+  <div 
+    *ngFor="let notification of notifications; trackBy: trackByFn"
+    class="notification"
+    [class]="'notification-' + notification.type"
+    [attr.role]="notification.type === 'error' ? 'alert' : 'status'"
+    [attr.aria-live]="notification.type === 'error' ? 'assertive' : 'polite'">
+    
+    <div class="notification-content">
+      <div class="notification-icon">
+        <i [class]="'bi ' + getIcon(notification.type)"></i>
+      </div>
+      
+      <div class="notification-body">
+        <div class="notification-title">{{ notification.title }}</div>
+        <div *ngIf="notification.message" class="notification-message">
+          {{ notification.message }}
+        </div>
+      </div>
+      
+      <div class="notification-actions">
+        <button 
+          *ngIf="notification.action"
+          type="button"
+          class="btn btn-sm notification-action-btn"
+          (click)="executeAction(notification)">
+          {{ notification.action.label }}
+        </button>
+        
+        <button 
+          *ngIf="notification.dismissible"
+          type="button"
+          class="btn-close notification-close"
+          aria-label="Dismiss notification"
+          (click)="dismiss(notification.id)">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

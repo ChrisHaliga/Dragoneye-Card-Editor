@@ -1,0 +1,197 @@
+.notification-container {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1060;
+  max-width: 400px;
+  width: 100%;
+  pointer-events: none;
+}
+
+.notification {
+  background: var(--bs-body-bg, white);
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  margin-bottom: 0.75rem;
+  pointer-events: auto;
+  animation: slideIn 0.3s ease-out;
+  border-left-width: 4px;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.notification-success {
+  border-left-color: var(--bs-success, #198754);
+}
+
+.notification-error {
+  border-left-color: var(--bs-danger, #dc3545);
+}
+
+.notification-warning {
+  border-left-color: var(--bs-warning, #ffc107);
+}
+
+.notification-info {
+  border-left-color: var(--bs-info, #0dcaf0);
+}
+
+.notification-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem;
+}
+
+.notification-icon {
+  flex-shrink: 0;
+  font-size: 1.25rem;
+  margin-top: 0.125rem;
+}
+
+.notification-success .notification-icon {
+  color: var(--bs-success, #198754);
+}
+
+.notification-error .notification-icon {
+  color: var(--bs-danger, #dc3545);
+}
+
+.notification-warning .notification-icon {
+  color: var(--bs-warning, #ffc107);
+}
+
+.notification-info .notification-icon {
+  color: var(--bs-info, #0dcaf0);
+}
+
+.notification-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-title {
+  font-weight: 600;
+  color: var(--bs-body-color, #212529);
+  margin-bottom: 0.25rem;
+  word-wrap: break-word;
+}
+
+.notification-message {
+  font-size: 0.875rem;
+  color: var(--bs-secondary-color, #6c757d);
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.notification-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.notification-action-btn {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.notification-success .notification-action-btn {
+  background: var(--bs-success, #198754);
+  border-color: var(--bs-success, #198754);
+  color: white;
+}
+
+.notification-error .notification-action-btn {
+  background: var(--bs-danger, #dc3545);
+  border-color: var(--bs-danger, #dc3545);
+  color: white;
+}
+
+.notification-warning .notification-action-btn {
+  background: var(--bs-warning, #ffc107);
+  border-color: var(--bs-warning, #ffc107);
+  color: var(--bs-dark, #212529);
+}
+
+.notification-info .notification-action-btn {
+  background: var(--bs-info, #0dcaf0);
+  border-color: var(--bs-info, #0dcaf0);
+  color: white;
+}
+
+.notification-close {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: var(--bs-secondary-color, #6c757d);
+  cursor: pointer;
+  padding: 0.125rem;
+  border-radius: 0.25rem;
+  transition: all 0.15s ease;
+}
+
+.notification-close:hover {
+  background: var(--bs-secondary-bg, #e9ecef);
+  color: var(--bs-body-color, #212529);
+}
+
+/* Dark theme overrides */
+:root[data-bs-theme='dark'] .notification,
+body.theme-dark .notification {
+  background: var(--bs-dark, #212529);
+  border-color: var(--bs-border-color, rgba(255, 255, 255, 0.175));
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.4);
+}
+
+:root[data-bs-theme='dark'] .notification-title,
+body.theme-dark .notification-title {
+  color: var(--bs-light, #f8f9fa);
+}
+
+:root[data-bs-theme='dark'] .notification-message,
+body.theme-dark .notification-message {
+  color: var(--bs-secondary-color, rgba(255, 255, 255, 0.75));
+}
+
+:root[data-bs-theme='dark'] .notification-close,
+body.theme-dark .notification-close {
+  color: var(--bs-light, #f8f9fa);
+}
+
+:root[data-bs-theme='dark'] .notification-close:hover,
+body.theme-dark .notification-close:hover {
+  background: var(--bs-secondary, #6c757d);
+  color: var(--bs-light, #f8f9fa);
+}
+
+/* Animation for removing notifications */
+.notification.removing {
+  animation: slideOut 0.3s ease-in forwards;
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+    max-height: 200px;
+    margin-bottom: 0.75rem;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+    max-height: 0;
+    margin-bottom: 0;
+  }
+}

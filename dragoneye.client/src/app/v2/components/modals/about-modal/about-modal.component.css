@@ -1,0 +1,108 @@
+.modal {
+  z-index: 1070;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1060;
+}
+
+.about-content {
+  color: var(--text-primary);
+}
+
+.app-info {
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 1.5rem;
+}
+
+.app-name {
+  color: var(--text-primary);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.app-version {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.app-description {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+.features-section h6,
+.technology-section h6,
+.author-section h6,
+.links-section h6 {
+  color: #1976d2;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feature-list li {
+  padding: 0.25rem 0;
+  display: flex;
+  align-items: center;
+  color: var(--text-primary);
+}
+
+.tech-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tech-badge {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+}
+
+.author-section p {
+  color: var(--text-primary);
+}
+
+.author-section small {
+  color: var(--text-secondary);
+}
+
+.links-section .btn {
+  text-align: left;
+}
+
+.footer-text {
+  color: var(--text-secondary) !important;
+}
+
+.modal-dialog {
+  max-width: 500px;
+}
+
+@media (max-width: 768px) {
+  .modal-dialog {
+    margin: 1rem;
+  }
+  
+  .tech-stack {
+    justify-content: center;
+  }
+}

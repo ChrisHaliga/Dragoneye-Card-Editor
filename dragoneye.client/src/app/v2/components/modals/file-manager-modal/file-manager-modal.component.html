@@ -1,0 +1,82 @@
+<div class="modal-backdrop" *ngIf="isVisible" (click)="onBackdropClick($event)">
+  <div class="modal-dialog" role="dialog" aria-labelledby="fileManagerTitle" aria-modal="true">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 id="fileManagerTitle" class="modal-title">
+          <i class="bi bi-folder2-open me-2"></i>Load File
+        </h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="close()">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <div *ngIf="isLoading" class="loading-state">
+          <div class="spinner">
+            <i class="bi bi-arrow-clockwise spin"></i>
+          </div>
+          <p>Loading available files...</p>
+        </div>
+
+        <div *ngIf="error" class="error-state">
+          <div class="error-icon">
+            <i class="bi bi-exclamation-triangle text-warning"></i>
+          </div>
+          <p>{{ error }}</p>
+          <button class="btn btn-outline-primary btn-sm" (click)="loadAvailableFiles()">
+            <i class="bi bi-arrow-clockwise me-1"></i>Retry
+          </button>
+        </div>
+
+        <div *ngIf="!isLoading && !error && availableFiles.length === 0" class="empty-state">
+          <div class="empty-icon">
+            <i class="bi bi-folder-x text-muted"></i>
+          </div>
+          <p>No saved files found</p>
+          <small class="text-muted">Create and save a card set first</small>
+        </div>
+
+        <div *ngIf="!isLoading && !error && availableFiles.length > 0" class="file-list">
+          <p class="list-title">Select a file to load:</p>
+          <div class="file-items">
+            <div
+              *ngFor="let file of availableFiles"
+              class="file-item"
+              [class.selected]="selectedFile === file"
+              (click)="selectFile(file)"
+              (dblclick)="loadSelectedFile()">
+              <div class="file-icon">
+                <i class="bi bi-file-earmark-text"></i>
+              </div>
+              <div class="file-info">
+                <div class="file-name">{{ file }}</div>
+                <div class="file-meta">
+                  <small class="text-muted">Card data file</small>
+                </div>
+              </div>
+              <div class="file-status" *ngIf="selectedFile === file">
+                <i class="bi bi-check-circle text-primary"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()">
+          Cancel
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          [disabled]="!selectedFile"
+          (click)="loadSelectedFile()">
+          <i class="bi bi-folder2-open me-1"></i>Load File
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

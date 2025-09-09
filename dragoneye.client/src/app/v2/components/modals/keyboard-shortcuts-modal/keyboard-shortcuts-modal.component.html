@@ -1,0 +1,184 @@
+<div class="modal" [class.show]="isVisible" [style.display]="isVisible ? 'block' : 'none'">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-keyboard me-2"></i>Keyboard Shortcuts
+        </h5>
+        <button type="button" class="btn-close" (click)="hide()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h6 class="text-muted text-uppercase fw-bold mb-3">Working with Files</h6>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Ctrl</kbd> + <kbd>S</kbd>
+              </div>
+              <span>Save Your Cards</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>S</kbd>
+              </div>
+              <span>Save As New File</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Ctrl</kbd> + <kbd>O</kbd>
+              </div>
+              <span>Open Card Collection</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Ctrl</kbd> + <kbd>E</kbd>
+              </div>
+              <span>Export Cards</span>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <h6 class="text-muted text-uppercase fw-bold mb-3">Editing Cards</h6>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Ctrl</kbd> + <kbd>Z</kbd>
+              </div>
+              <span>Undo Changes</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Ctrl</kbd> + <kbd>Y</kbd>
+              </div>
+              <span>Redo Changes</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Ctrl</kbd> + <kbd>D</kbd>
+              </div>
+              <span>Duplicate Cards</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Delete</kbd>
+              </div>
+              <span>Delete Selected Cards</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-4">
+          <div class="col-md-6">
+            <h6 class="text-muted text-uppercase fw-bold mb-3">Navigating Your Cards</h6>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>↑</kbd> / <kbd>↓</kbd>
+              </div>
+              <span>Browse Through Cards</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>←</kbd> / <kbd>→</kbd>
+              </div>
+              <span>Switch Between Groups</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Ctrl</kbd> + <kbd>←</kbd> / <kbd>→</kbd>
+              </div>
+              <span>Move Cards Left/Right</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Esc</kbd>
+              </div>
+              <span>Clear Selection</span>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <h6 class="text-muted text-uppercase fw-bold mb-3">Viewing Your Cards</h6>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Ctrl</kbd> + <kbd>+</kbd>
+              </div>
+              <span>Zoom In</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Ctrl</kbd> + <kbd>-</kbd>
+              </div>
+              <span>Zoom Out</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Ctrl</kbd> + <kbd>0</kbd>
+              </div>
+              <span>Reset Zoom</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Ctrl</kbd> + <kbd>F</kbd>
+              </div>
+              <span>Focus on Selected Card</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-4">
+          <div class="col-md-6">
+            <h6 class="text-muted text-uppercase fw-bold mb-3">Selecting Cards</h6>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Shift</kbd> + <kbd>Click</kbd>
+              </div>
+              <span>Add Cards to Selection</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Click & Drag</kbd>
+              </div>
+              <span>Select Multiple Cards</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Double-click</kbd>
+              </div>
+              <span>Edit Card</span>
+            </div>
+          </div>
+          
+          <div class="col-md-6">
+            <h6 class="text-muted text-uppercase fw-bold mb-3">Getting Help</h6>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Ctrl</kbd> + <kbd>,</kbd>
+              </div>
+              <span>Open Settings</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>F1</kbd>
+              </div>
+              <span>Getting Started Guide</span>
+            </div>
+            <div class="shortcut-item">
+              <div class="shortcut-keys">
+                <kbd>Ctrl</kbd> + <kbd>/</kbd>
+              </div>
+              <span>Show These Shortcuts</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="hide()">
+          <i class="bi bi-check me-1"></i> Got It!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isVisible" (click)="hide()"></div>

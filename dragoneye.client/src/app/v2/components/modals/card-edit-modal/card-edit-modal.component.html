@@ -1,0 +1,263 @@
+<div class="modal" [class.show]="isVisible" [style.display]="isVisible ? 'flex' : 'none'" (click)="onBackdropClick($event)">
+  <div class="modal-dialog modal-lg" (click)="onModalClick($event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil me-2"></i>Edit: {{ editingCard?.title || 'Card' }}
+          <span *ngIf="hasUnsavedChanges" class="unsaved-indicator">*</span>
+        </h5>
+        <button type="button" class="btn-close" (click)="cancel()"></button>
+      </div>
+      <div class="modal-body" #modalBody>
+        <div *ngIf="!editingCard" class="text-center p-4">
+          <p>No card selected for editing.</p>
+        </div>
+        
+        <!-- V2-Only Card Editor -->
+        <div *ngIf="editingCard" class="card-editor">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="section-card">
+                <h6 class="section-title">Card Properties</h6>
+
+                <div class="mb-3">
+                  <label class="form-label">Title</label>
+                  <input type="text" 
+                         class="form-control form-control-sm" 
+                         [(ngModel)]="editingCard.title" 
+                         (input)="markAsChanged()"
+                         maxlength="50"
+                         placeholder="Enter card title">
+                  <div class="form-text">{{ editingCard.title.length || 0 }}/50 characters</div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Type</label>
+                  <select class="form-select form-select-sm" 
+                          [(ngModel)]="editingCard.type"
+                          (change)="markAsChanged()">
+                    <option value="">Select a type...</option>
+                    <option *ngFor="let type of availableTypes" [value]="type">{{ type }}</option>
+                  </select>
+                  <div class="form-text">Or type a custom value in the field below</div>
+                  <input type="text" 
+                         class="form-control form-control-sm mt-1" 
+                         [(ngModel)]="editingCard.type" 
+                         (input)="markAsChanged()"
+                         placeholder="Custom type">
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Element</label>
+                  <select class="form-select form-select-sm" 
+                          [(ngModel)]="editingCard.element"
+                          (change)="markAsChanged()">
+                    <option value="">Select an element...</option>
+                    <option *ngFor="let element of availableElements" [value]="element.key">
+                      {{ element.symbol }} {{ element.name }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Background Image</label>
+                  <input type="url" 
+                         class="form-control form-control-sm mb-2" 
+                         [(ngModel)]="editingCard.backgroundImage" 
+                         (input)="markAsChanged()"
+                         placeholder="Image URL (https://...)">
+                  <div class="d-flex gap-2">
+                    <label class="btn btn-outline-primary btn-sm flex-fill mb-0" for="imageUploadV2">
+                      <i class="bi bi-camera me-1"></i> Upload Image
+                    </label>
+                    <button type="button"
+                            class="btn btn-outline-danger btn-sm" 
+                            (click)="removeImage()" 
+                            [disabled]="!editingCard.backgroundImage">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </div>
+                  <input type="file" 
+                         id="imageUploadV2" 
+                         class="d-none" 
+                         accept="image/*" 
+                         (change)="onImageChange($event)">
+                  <div *ngIf="editingCard.backgroundImage" class="mt-2">
+                    <small class="text-muted">Preview:</small>
+                    <div class="image-preview">
+                      <div class="card-preview-container">
+                        <svg viewBox="0 0 160 185" class="card-background-preview">
+                          <!-- Background image only, no background fill -->
+                          <image [attr.href]="editingCard.backgroundImage" 
+                                 x="0" y="0" 
+                                 width="160" 
+                                 height="185" 
+                                 preserveAspectRatio="xMidYMid slice" />
+                        </svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-8">
+              <div class="section-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <h6 class="section-title mb-0">
+                    Card Details 
+                    <span class="badge bg-secondary ms-2">{{ editingCard.details.length }}</span>
+                  </h6>
+                  <button type="button" 
+                          class="btn btn-sm btn-outline-primary" 
+                          (click)="addDetailToEditingCard()">
+                    <i class="bi bi-plus me-1"></i> Add Detail
+                  </button>
+                </div>
+
+                <div *ngFor="let detail of editingCard.details; let i = index" class="detail-section mb-2">
+                  <div class="detail-summary" (click)="selectDetail(i)" [class.selected]="selectedDetailIndex === i">
+                    <div class="detail-title-row">
+                      <span class="detail-title-text">{{ detail.name || 'Unnamed Detail' }}</span>
+                      <div class="detail-costs-compact">
+                        <span class="cost-compact ap">{{ detail.apCost }}AP</span>
+                        <span class="cost-compact sp">{{ detail.spCost }}SP</span>
+                      </div>
+                    </div>
+                    <div class="detail-actions">
+                      <button type="button"
+                              class="btn btn-sm btn-outline-secondary me-1" 
+                              (click)="duplicateDetail(i); $event.stopPropagation()"
+                              title="Duplicate Detail">
+                        <i class="bi bi-files"></i>
+                      </button>
+                      <button type="button"
+                              class="btn btn-sm btn-outline-danger" 
+                              (click)="removeDetail(i); $event.stopPropagation()"
+                              [disabled]="editingCard.details.length === 1"
+                              title="Delete Detail">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="detail-content" *ngIf="selectedDetailIndex === i">
+                    <div class="row mb-3">
+                      <div class="col">
+                        <label class="form-label">Name</label>
+                        <input type="text" 
+                               class="form-control form-control-sm" 
+                               [(ngModel)]="detail.name" 
+                               (input)="markAsChanged()"
+                               maxlength="30"
+                               placeholder="e.g., Attack, Spell, Heal">
+                        <div class="form-text">{{ detail.name.length || 0 }}/30 characters</div>
+                      </div>
+                      <div class="col-auto">
+                        <label class="form-label">AP Cost</label>
+                        <input type="number" 
+                               class="form-control form-control-sm" 
+                               style="width: 80px;" 
+                               [(ngModel)]="detail.apCost" 
+                               (input)="markAsChanged()"
+                               min="0" 
+                               max="10"
+                               step="1">
+                      </div>
+                      <div class="col-auto">
+                        <label class="form-label">SP Cost</label>
+                        <input type="number" 
+                               class="form-control form-control-sm" 
+                               style="width: 80px;" 
+                               [(ngModel)]="detail.spCost" 
+                               (input)="markAsChanged()"
+                               min="0" 
+                               max="10"
+                               step="1">
+                      </div>
+                    </div>
+
+                    <div class="mb-3">
+                      <label class="form-label">Description</label>
+                      <textarea class="form-control form-control-sm" 
+                                rows="4" 
+                                [(ngModel)]="detail.details" 
+                                (input)="markAsChanged()"
+                                maxlength="200"
+                                placeholder="Describe what this action does..."></textarea>
+                      <div class="form-text">{{ detail.details.length || 0 }}/200 characters</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="editingCard.details.length === 0" class="text-center text-muted py-4">
+                  <i class="bi bi-plus-circle-dotted" style="font-size: 2rem;"></i>
+                  <p class="mt-2">No details yet. Add your first detail to get started.</p>
+                  <button type="button" 
+                          class="btn btn-outline-primary btn-sm" 
+                          (click)="addDetailToEditingCard()">
+                    <i class="bi bi-plus me-1"></i> Add First Detail
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="d-flex justify-content-between align-items-center w-100">
+          <div class="unsaved-changes-indicator" *ngIf="hasUnsavedChanges">
+            <i class="bi bi-exclamation-triangle text-warning me-2"></i>
+            <span class="text-muted">You have unsaved changes</span>
+          </div>
+          <div class="d-flex gap-2">
+            <button type="button" 
+                    class="btn btn-secondary" 
+                    (click)="cancel()">
+              <i class="bi bi-x-circle me-2"></i>Cancel
+            </button>
+            <button type="button" 
+                    class="btn btn-primary" 
+                    [disabled]="!hasUnsavedChanges"
+                    (click)="confirm()">
+              <i class="bi bi-check-circle me-2"></i>Confirm Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Unsaved Changes Confirmation Modal -->
+<div class="modal confirmation-modal" 
+     [class.show]="showConfirmationModal" 
+     [style.display]="showConfirmationModal ? 'flex' : 'none'" 
+     (click)="onConfirmationBackdropClick($event)">
+  <div class="modal-dialog modal-sm" (click)="onConfirmationModalClick($event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-exclamation-triangle text-warning me-2"></i>{{ confirmationTitle }}
+        </h5>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0">{{ confirmationMessage }}</p>
+      </div>
+      <div class="modal-footer">
+        <div class="d-flex gap-2 w-100 justify-content-end">
+          <button type="button" 
+                  class="btn btn-secondary" 
+                  (click)="onConfirmationResult(false)">
+            <i class="bi bi-arrow-left me-2"></i>Keep Editing
+          </button>
+          <button type="button" 
+                  class="btn btn-danger" 
+                  (click)="onConfirmationResult(true)">
+            <i class="bi bi-trash me-2"></i>Discard Changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,78 @@
+<div class="modal" [class.show]="isVisible" [style.display]="isVisible ? 'block' : 'none'">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-info-circle me-2"></i>About Dragoneye
+        </h5>
+        <button type="button" class="btn-close" (click)="hide()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="about-content">
+          
+          <!-- App Info -->
+          <div class="app-info text-center mb-4">
+            <div class="app-icon mb-3">
+              <img src="/Logo.png" alt="Dragoneye Logo" style="width: 80px; height: 80px;">
+            </div>
+            <h4 class="app-name">Dragoneye Card Editor</h4>
+            <p class="app-version text-muted">Version 2.0</p>
+            <p class="app-description">
+              Card editor for the TTRPG Dragoneye - create and manage your custom Dragoneye cards.
+            </p>
+          </div>
+
+          <!-- Technology -->
+          <div class="technology-section mb-4">
+            <h6><i class="bi bi-gear me-2"></i>Built With</h6>
+            <div class="tech-stack">
+              <span class="tech-badge">Angular</span>
+              <span class="tech-badge">TypeScript</span>
+              <span class="tech-badge">.NET</span>
+              <span class="tech-badge">Bootstrap</span>
+              <span class="tech-badge">SVG Graphics</span>
+            </div>
+          </div>
+
+          <!-- Author -->
+          <div class="author-section mb-4">
+            <h6><i class="bi bi-person me-2"></i>Created By</h6>
+            <p class="mb-0">
+              <strong>Chris Haliga</strong><br>
+              <small class="text-muted">Software Developer & Card Game Enthusiast</small>
+            </p>
+          </div>
+
+          <!-- Links -->
+          <div class="links-section">
+            <h6><i class="bi bi-link-45deg me-2"></i>Resources</h6>
+            <div class="d-grid gap-2">
+              <button type="button" class="btn btn-outline-primary" (click)="openGitHub()">
+                <i class="bi bi-github me-2"></i>View Source Code
+              </button>
+              <button type="button" class="btn btn-outline-secondary" (click)="openIssues()">
+                <i class="bi bi-bug me-2"></i>Report a Problem
+              </button>
+              <button type="button" class="btn btn-outline-info" (click)="openLinkedIn()">
+                <i class="bi bi-linkedin me-2"></i>Connect on LinkedIn
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <div class="footer-text text-muted small me-auto">
+          © 2025 Chris Haliga. Open source project.
+        </div>
+        <button type="button" class="btn btn-primary" (click)="hide()">
+          <i class="bi bi-x me-1"></i> Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isVisible" (click)="hide()"></div>

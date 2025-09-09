@@ -1,0 +1,51 @@
+.selection-bounds-overlay {
+  position: absolute;
+  border: 2px dashed #ffd700;
+  background: rgba(255, 215, 0, 0.05);
+  z-index: 50;
+  pointer-events: none;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
+  animation: pulse-border 2s infinite;
+}
+
+.corner-indicator {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: #ffd700;
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.corner-indicator.top-left {
+  top: -4px;
+  left: -4px;
+}
+
+.corner-indicator.top-right {
+  top: -4px;
+  right: -4px;
+}
+
+.corner-indicator.bottom-left {
+  bottom: -4px;
+  left: -4px;
+}
+
+.corner-indicator.bottom-right {
+  bottom: -4px;
+  right: -4px;
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: #ffd700;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    border-color: #ffed4e;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+}

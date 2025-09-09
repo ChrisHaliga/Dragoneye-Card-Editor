@@ -1,0 +1,37 @@
+<div class="context-menu" 
+     *ngIf="isVisible"
+     #contextMenu
+     tabindex="-1"
+     [style.left.px]="position.x"
+     [style.top.px]="position.y"
+     role="menu"
+     aria-label="Context menu">
+  
+  <div class="context-menu-items">
+    <ng-container *ngFor="let action of actions; trackBy: trackByActionId">
+      
+      <!-- Separator -->
+      <div *ngIf="action.separator" class="context-menu-separator"></div>
+      
+      <!-- Menu Item -->
+      <button *ngIf="!action.separator"
+              type="button"
+              class="context-menu-item"
+              [class.disabled]="!action.enabled"
+              [class.danger]="action.danger"
+              [disabled]="!action.enabled"
+              (click)="executeAction(action)"
+              role="menuitem"
+              [attr.aria-label]="action.label">
+        
+        <i [class]="'bi ' + action.icon" class="context-menu-icon"></i>
+        <span class="context-menu-label">{{ action.label }}</span>
+        
+        <!-- Keyboard shortcut hint (future enhancement) -->
+        <span *ngIf="false" class="context-menu-shortcut">Ctrl+D</span>
+      </button>
+      
+    </ng-container>
+  </div>
+  
+</div>

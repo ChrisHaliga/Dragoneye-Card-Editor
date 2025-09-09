@@ -21,11 +21,16 @@ export class ThemeService {
     const body = document.body;
     body.classList.remove('theme-light', 'theme-dark');
     
+    let effectiveTheme = theme;
     if (theme === 'auto') {
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      effectiveTheme = prefersDark ? 'dark' : 'light';
       body.classList.add(prefersDark ? 'theme-dark' : 'theme-light');
     } else {
       body.classList.add(`theme-${theme}`);
     }
+    
+    // Set Bootstrap theme attribute
+    body.setAttribute('data-bs-theme', effectiveTheme);
   }
 }

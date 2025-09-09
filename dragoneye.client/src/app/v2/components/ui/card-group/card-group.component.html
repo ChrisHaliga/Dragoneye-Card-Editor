@@ -1,0 +1,76 @@
+<!-- Simplified Group Component -->
+<div class="groups-container">
+  <div class="card-group" 
+       (contextmenu)="onGroupContextMenu($event)"
+       [attr.data-group-index]="groupIndex"
+       (triggerRename)="startRenaming()">
+    
+    <!-- Simplified group header - just the name -->
+    <div class="group-header">
+      <input *ngIf="isRenaming" 
+             type="text" 
+             class="group-name-input"
+             [(ngModel)]="editingName" 
+             (blur)="finishRenaming()" 
+             (keydown.enter)="finishRenaming()"
+             (keydown.escape)="cancelRenaming()"
+             (click)="$event.stopPropagation()">
+             
+      <div *ngIf="!isRenaming" 
+           class="group-label" 
+           (dblclick)="startRenaming(); $event.stopPropagation()">
+        {{ group.name }}
+        <i class="bi bi-pencil edit-icon"></i>
+      </div>
+    </div>
+
+    <!-- Always visible group cards -->
+    <div class="group-cards" [attr.data-group-index]="groupIndex">
+      
+      <!-- Existing cards -->
+      <div *ngFor="let card of group.cards; let cardIndex = index" 
+           class="card-container"
+           [class.selected-card]="isCardSelected(cardIndex)"
+           [class.dragging]="isCardBeingDragged(cardIndex)"
+           [attr.data-group-index]="groupIndex"
+           [attr.data-card-index]="cardIndex"
+           (dblclick)="onCardDoubleClick(cardIndex, $event)"
+           (contextmenu)="onCardContextMenu($event, cardIndex)"
+           (mousedown)="onMouseDown($event, cardIndex)"
+           data-interactive>
+        
+        <!-- Card delete button -->
+        <button class="card-delete-btn btn btn-sm btn-danger" 
+                (click)="onDeleteCard(cardIndex); $event.stopPropagation()"
+                title="Delete Card">
+          <i class="bi bi-x"></i>
+        </button>
+
+        <!-- Card edit button (only when selected and hovered) -->
+        <button *ngIf="isCardSelected(cardIndex)" 
+                class="card-edit-btn btn"
+                (click)="onEditCard(cardIndex); $event.stopPropagation()"
+                title="Edit Card">
+          <i class="bi bi-pencil"></i>
+        </button>
+        
+        <app-card-display-v2
+          [card]="card"
+          [groupIndex]="groupIndex"
+          [cardIndex]="cardIndex"
+          [isSelected]="isCardSelected(cardIndex)">
+        </app-card-display-v2>
+      </div>
+
+      <!-- Add card button -->
+      <div class="add-card-container">
+        <button class="add-card-btn" 
+                (click)="onAddCard(); $event.stopPropagation()"
+                title="Add New Card">
+          <i class="bi bi-plus-circle"></i>
+          <span>Add Card</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

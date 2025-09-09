@@ -1,0 +1,95 @@
+<div class="modal" [class.show]="isVisible" [style.display]="isVisible ? 'block' : 'none'">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-rocket-takeoff me-2"></i>Getting Started with Dragoneye
+        </h5>
+        <button type="button" class="btn-close" (click)="hide()"></button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="getting-started-content">
+          
+          <!-- Welcome Section -->
+          <div class="welcome-section mb-4">
+            <h6><i class="bi bi-hand-thumbs-up me-2"></i>Welcome to Dragoneye Card Editor!</h6>
+            <p class="mb-0">
+              Create, edit, and manage your custom trading cards with an intuitive, modern interface. 
+              This guide will help you get started creating amazing cards in just a few minutes.
+            </p>
+          </div>
+
+          <!-- Creating Cards -->
+          <div class="step-section mb-4">
+            <h6><i class="bi bi-plus-circle me-2"></i>Creating Your First Cards</h6>
+            <ul>
+              <li><strong>Start a New Group:</strong> Click "Add New Group" to organize your cards by theme or type</li>
+              <li><strong>Add Cards:</strong> Click the "Add Card" button in any group to create new cards</li>
+              <li><strong>Edit Your Cards:</strong> Double-click any card to open the card editor and customize its properties</li>
+              <li><strong>Add Card Effects:</strong> Use the card editor to add spells, abilities, and special effects to your cards</li>
+            </ul>
+          </div>
+
+          <!-- File Management -->
+          <div class="step-section mb-4">
+            <h6><i class="bi bi-files me-2"></i>Managing Your Card Collections</h6>
+            <ul>
+              <li><strong>Save Your Work:</strong> Use File → Save to keep your cards safe (or press Ctrl+S)</li>
+              <li><strong>Save Multiple Versions:</strong> Use File → Save As to create different versions of your card sets</li>
+              <li><strong>Load Previous Work:</strong> Use File → Load to open card sets you've saved before</li>
+              <li><strong>Share Your Cards:</strong> Export your cards as JSON files to share with others</li>
+              <li><strong>Import Collections:</strong> Import card sets from JSON files to expand your collection</li>
+            </ul>
+          </div>
+
+          <!-- Working with Cards -->
+          <div class="step-section mb-4">
+            <h6><i class="bi bi-layout-three-columns me-2"></i>Working with Your Cards</h6>
+            <ul>
+              <li><strong>Organize by Groups:</strong> Group your cards by element, type, or any theme you like</li>
+              <li><strong>Select Multiple Cards:</strong> Hold Shift and click to select several cards at once</li>
+              <li><strong>Move Cards Around:</strong> Drag cards between groups or reorder them within a group</li>
+              <li><strong>View Your Cards:</strong> Use the zoom controls to get a closer look at your card designs</li>
+              <li><strong>Quick Actions:</strong> Right-click any card or group for helpful shortcuts</li>
+            </ul>
+          </div>
+
+          <!-- Productivity Features -->
+          <div class="step-section mb-4">
+            <h6><i class="bi bi-stars me-2"></i>Work Faster with These Features</h6>
+            <ul>
+              <li><strong>Bulk Operations:</strong> Select multiple cards to duplicate or delete several at once</li>
+              <li><strong>Drag & Drop:</strong> Drag cards between groups to reorganize your collection</li>
+              <li><strong>Undo & Redo:</strong> Made a mistake? Use Ctrl+Z to undo, or Ctrl+Y to redo changes</li>
+              <li><strong>Quick Selection:</strong> Drag to select multiple cards, or Shift+click to add to your selection</li>
+              <li><strong>Focus View:</strong> Click "Focus on Card" in the View menu to center a specific card</li>
+            </ul>
+          </div>
+
+          <!-- Essential Shortcuts -->
+          <div class="step-section mb-4">
+            <h6><i class="bi bi-keyboard me-2"></i>Essential Keyboard Shortcuts</h6>
+            <ul>
+              <li><strong>Ctrl+S:</strong> Save your card collection</li>
+              <li><strong>Ctrl+Z / Ctrl+Y:</strong> Undo and redo your changes</li>
+              <li><strong>Delete:</strong> Remove selected cards</li>
+              <li><strong>Ctrl+D:</strong> Duplicate selected cards</li>
+              <li><strong>F1:</strong> Open this getting started guide</li>
+              <li><strong>Escape:</strong> Clear selection or close dialogs</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="hide()">
+          <i class="bi bi-check me-1"></i> Let's Get Started!
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="isVisible" (click)="hide()"></div>

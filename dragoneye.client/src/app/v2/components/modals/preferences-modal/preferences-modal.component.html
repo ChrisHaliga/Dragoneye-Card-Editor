@@ -1,0 +1,222 @@
+<div class="modal-backdrop" *ngIf="isVisible" (click)="onBackdropClick($event)">
+  <div class="modal-dialog modal-lg" role="dialog" aria-labelledby="preferencesTitle" aria-modal="true">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 id="preferencesTitle" class="modal-title">
+          <i class="bi bi-gear me-2"></i>Preferences
+        </h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cancel()">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+      
+      <!-- Body -->
+      <div class="modal-body">
+        <div class="preferences-content">
+          
+          <!-- Loading State -->
+          <div *ngIf="isLoading" class="loading-state">
+            <div class="spinner">
+              <i class="bi bi-arrow-clockwise spin"></i>
+            </div>
+            <p>Loading preferences...</p>
+          </div>
+
+          <!-- Preferences Form -->
+          <div *ngIf="!isLoading">
+            
+            <!-- Editor Settings -->
+            <div class="preference-section mb-4">
+              <h6><i class="bi bi-pencil-square me-2"></i>Editor Settings</h6>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Undo Levels</label>
+                  <div class="input-group">
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      [(ngModel)]="preferences.undoLevels" 
+                      (ngModelChange)="onPreferenceChange()"
+                      min="1" 
+                      max="50"
+                      [class.is-invalid]="!isUndoLevelsValid()">
+                    <span class="input-group-text">steps</span>
+                  </div>
+                  <small class="form-text text-muted">Number of actions you can undo (1-50)</small>
+                  <div *ngIf="!isUndoLevelsValid()" class="invalid-feedback d-block">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    Must be between 1 and 50
+                  </div>
+                </div>
+                
+                <div class="col-md-6">
+                  <label class="form-label">Default Card Type</label>
+                  <select 
+                    class="form-select" 
+                    [(ngModel)]="preferences.defaultCardType"
+                    (ngModelChange)="onPreferenceChange()">
+                    <option *ngFor="let type of availableCardTypes" [value]="type">
+                      {{ type }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Default Element</label>
+                  <select 
+                    class="form-select" 
+                    [(ngModel)]="preferences.defaultElement"
+                    (ngModelChange)="onPreferenceChange()">
+                    <option *ngFor="let element of availableElements" [value]="element.key">
+                      {{element.symbol}} {{element.name}}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- File Settings -->
+            <div class="preference-section mb-4">
+              <h6><i class="bi bi-floppy me-2"></i>File Settings</h6>
+              
+              <div class="form-check mb-3">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  [(ngModel)]="preferences.autoSave" 
+                  (ngModelChange)="onPreferenceChange()"
+                  id="autoSaveCheck">
+                <label class="form-check-label" for="autoSaveCheck">
+                  Enable Auto-Save
+                </label>
+              </div>
+
+              <div class="row mb-3" *ngIf="preferences.autoSave">
+                <div class="col-md-6">
+                  <label class="form-label">Auto-Save Interval</label>
+                  <div class="input-group">
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      [(ngModel)]="preferences.autoSaveInterval" 
+                      (ngModelChange)="onPreferenceChange()"
+                      min="1" 
+                      max="60"
+                      [class.is-invalid]="!isAutoSaveIntervalValid()">
+                    <span class="input-group-text">minutes</span>
+                  </div>
+                  <small class="form-text text-muted">How often to automatically save (1-60 minutes)</small>
+                  <div *ngIf="!isAutoSaveIntervalValid()" class="invalid-feedback d-block">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    Must be between 1 and 60 minutes
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Appearance Settings -->
+            <div class="preference-section mb-4">
+              <h6><i class="bi bi-palette me-2"></i>Appearance</h6>
+              
+              <div class="row mb-3">
+                <div class="col-md-6">
+                  <label class="form-label">Theme</label>
+                  <select 
+                    class="form-select" 
+                    [(ngModel)]="preferences.theme" 
+                    (ngModelChange)="onThemeChange()">
+                    <option value="auto">Auto (System)</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                  </select>
+                  <small class="form-text text-muted">
+                    <i class="bi bi-info-circle me-1"></i>
+                    Theme changes will be applied when you save preferences
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-check mb-3">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  [(ngModel)]="preferences.showTooltips" 
+                  (ngModelChange)="onPreferenceChange()"
+                  id="tooltipsCheck">
+                <label class="form-check-label" for="tooltipsCheck">
+                  Show Tooltips
+                </label>
+              </div>
+            </div>
+
+            <!-- Behavior Settings -->
+            <div class="preference-section mb-4">
+              <h6><i class="bi bi-shield-check me-2"></i>Behavior</h6>
+              
+              <div class="form-check mb-3">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  [(ngModel)]="preferences.confirmDeleteActions" 
+                  (ngModelChange)="onPreferenceChange()"
+                  id="confirmDeleteCheck">
+                <label class="form-check-label" for="confirmDeleteCheck">
+                  Confirm Delete Actions
+                </label>
+              </div>
+
+              <div class="form-check mb-3">
+                <input 
+                  class="form-check-input" 
+                  type="checkbox" 
+                  [(ngModel)]="preferences.showWelcomeOnStartup" 
+                  (ngModelChange)="onPreferenceChange()"
+                  id="welcomeCheck">
+                <label class="form-check-label" for="welcomeCheck">
+                  Show Welcome Guide on Startup
+                </label>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button 
+          type="button" 
+          class="btn btn-outline-secondary" 
+          (click)="resetToDefaults()"
+          [disabled]="isLoading">
+          <i class="bi bi-arrow-clockwise me-1"></i> Reset to Defaults
+        </button>
+        
+        <div class="ms-auto">
+          <button 
+            type="button" 
+            class="btn btn-secondary me-2" 
+            (click)="cancel()"
+            [disabled]="isLoading">
+            Cancel
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-primary" 
+            (click)="savePreferences()"
+            [disabled]="!canSave()">
+            <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </span>
+            <i *ngIf="!isLoading" class="bi bi-check me-1"></i>
+            {{ isLoading ? 'Saving...' : 'Save Preferences' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,79 @@
+<div class="modal-backdrop" *ngIf="isVisible" (click)="onBackdropClick($event)">
+  <div class="modal-dialog" role="dialog" aria-labelledby="saveAsTitle" aria-modal="true">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 id="saveAsTitle" class="modal-title">
+          <i class="bi bi-cloud-upload-fill me-2"></i>Save As
+        </h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="close()">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <form (ngSubmit)="saveFile()" #saveForm="ngForm">
+          <div class="form-group">
+            <label for="filename" class="form-label">
+              <i class="bi bi-file-earmark-text me-1"></i>Filename
+            </label>
+            <div class="input-group">
+              <input
+                type="text"
+                id="filename"
+                class="form-control filename-input"
+                [(ngModel)]="filename"
+                name="filename"
+                placeholder="Enter filename..."
+                (input)="onFilenameChange()"
+                (keydown)="onKeyDown($event)"
+                [class.is-invalid]="validationError"
+                autocomplete="off"
+                required>
+              <span class="input-group-text">.json</span>
+            </div>
+            
+            <div *ngIf="validationError" class="invalid-feedback d-block">
+              <i class="bi bi-exclamation-triangle me-1"></i>{{ validationError }}
+            </div>
+            
+            <div class="form-text">
+              <i class="bi bi-info-circle me-1"></i>
+              File will be saved with .json extension
+            </div>
+          </div>
+
+          <!-- Preview -->
+          <div class="filename-preview" *ngIf="filename.trim() && !validationError">
+            <div class="preview-label">
+              <i class="bi bi-eye me-1"></i>Preview:
+            </div>
+            <div class="preview-filename">
+              <i class="bi bi-file-earmark-text me-1"></i>
+              {{ filename.endsWith('.json') ? filename : filename + '.json' }}
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="close()">
+          Cancel
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          [disabled]="!filename.trim() || validationError || isValidating"
+          (click)="saveFile()">
+          <span *ngIf="isValidating" class="spinner-border spinner-border-sm me-2" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </span>
+          <i *ngIf="!isValidating" class="bi bi-cloud-upload-fill me-1"></i>
+          {{ isValidating ? 'Checking...' : 'Save File' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

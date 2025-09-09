@@ -1,0 +1,13 @@
+<div class="selection-bounds-overlay" 
+     *ngIf="bounds && selectedCards.length > 1"
+     [style.left.px]="bounds.left"
+     [style.top.px]="bounds.top"
+     [style.width.px]="bounds.width"
+     [style.height.px]="bounds.height">
+  
+  <!-- Corner indicators -->
+  <div class="corner-indicator top-left"></div>
+  <div class="corner-indicator top-right"></div>
+  <div class="corner-indicator bottom-left"></div>
+  <div class="corner-indicator bottom-right"></div>
+</div>
