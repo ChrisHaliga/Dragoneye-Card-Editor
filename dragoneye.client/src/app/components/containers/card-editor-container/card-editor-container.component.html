@@ -284,6 +284,15 @@
   (cardUpdated)="onCardUpdated($event)">
 </app-card-edit-modal>
 
+<!-- Rename Group Modal -->
+<app-rename-group-modal
+  [isVisible]="renameGroupModalVisible"
+  [currentGroupName]="renameGroupCurrentName"
+  [groupIndex]="renameGroupIndex"
+  (closed)="onCloseRenameGroupModal()"
+  (groupRenamed)="onGroupRenamed($event)">
+</app-rename-group-modal>
+
 <!-- Drag Preview -->
 <div *ngIf="dragState$ | async as dragState" 
      class="drag-preview"

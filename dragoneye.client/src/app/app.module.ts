@@ -19,6 +19,7 @@ import { FileManagerModalComponent } from './components/modals/file-manager-moda
 import { SaveAsModalComponent } from './components/modals/save-as-modal/save-as-modal.component';
 import { PreferencesModalComponent } from './components/modals/preferences-modal/preferences-modal.component';
 import { CardEditModalComponent } from './components/modals/card-edit-modal/card-edit-modal.component';
+import { RenameGroupModalComponent } from './components/modals/rename-group-modal/rename-group-modal.component';
 import { GettingStartedModalComponent } from './components/modals/getting-started-modal/getting-started-modal.component';
 import { KeyboardShortcutsModalComponent } from './components/modals/keyboard-shortcuts-modal/keyboard-shortcuts-modal.component';
 import { AboutModalComponent } from './components/modals/about-modal/about-modal.component';
@@ -51,6 +52,7 @@ export const PREFERENCES_API_REPOSITORY_TOKEN = Symbol('IPreferencesApiRepositor
     SaveAsModalComponent,
     PreferencesModalComponent,
     CardEditModalComponent,
+    RenameGroupModalComponent,
     GettingStartedModalComponent,
     KeyboardShortcutsModalComponent,
     AboutModalComponent

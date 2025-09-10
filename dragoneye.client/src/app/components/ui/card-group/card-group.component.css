@@ -36,8 +36,6 @@
   color: white;
   font-size: 1.2rem;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -49,27 +47,6 @@
   border: none !important;
   box-shadow: none !important;
   backdrop-filter: none !important;
-}
-
-.group-label:hover {
-  color: #000000;
-  background: rgba(255, 255, 255, 0.9) !important;
-  text-shadow: none;
-  transform: none;
-  border-radius: 4px;
-  padding: 0.5rem 0.75rem;
-}
-
-.group-label .edit-icon {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.group-label:hover .edit-icon {
-  opacity: 1;
-  color: #666666;
 }
 
 .group-name-input {

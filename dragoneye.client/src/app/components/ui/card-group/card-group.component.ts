@@ -33,9 +33,6 @@ export class CardGroupComponent {
   }>();
   @Output() cardEditRequested = new EventEmitter<{ groupIndex: number; cardIndex: number }>();
 
-  isRenaming = false;
-  editingName = '';
-  
   // Click vs Drag detection
   private mouseDownTimer: any = null;
   private mouseDownStartTime = 0;
@@ -52,42 +49,6 @@ export class CardGroupComponent {
     this.dragDropService.moveEvents.subscribe(moveEvent => {
       this.handleMoveEvent(moveEvent);
     });
-  }
-
-  startRenaming(): void {
-    this.isRenaming = true;
-    this.editingName = this.group.name;
-    setTimeout(() => {
-      const input = document.querySelector('.group-name-input') as HTMLInputElement;
-      if (input) {
-        input.focus();
-        input.select();
-      }
-    }, 0);
-  }
-
-  finishRenaming(): void {
-    if (this.editingName.trim() && this.editingName !== this.group.name) {
-      this.groupRenamed.emit({ 
-        groupIndex: this.groupIndex, 
-        newName: this.editingName.trim() 
-      });
-    }
-    this.isRenaming = false;
-  }
-
-  cancelRenaming(): void {
-    this.isRenaming = false;
-    this.editingName = this.group.name;
-  }
-
-  onInputBlur(): void {
-    // Very simple: just delay the finish to allow for any refocus events
-    setTimeout(() => {
-      if (this.isRenaming) {
-        this.finishRenaming();
-      }
-    }, 100);
   }
 
   onMouseDown(event: MouseEvent, cardIndex: number): void {
@@ -246,14 +207,6 @@ export class CardGroupComponent {
 
   getElementSymbol(elementKey: string): string {
     return this.elementService.getElementSymbol(elementKey);
-  }
-
-  onKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Enter') {
-      this.finishRenaming();
-    } else if (event.key === 'Escape') {
-      this.cancelRenaming();
-    }
   }
 
   onGroupContextMenu(event: MouseEvent): void {

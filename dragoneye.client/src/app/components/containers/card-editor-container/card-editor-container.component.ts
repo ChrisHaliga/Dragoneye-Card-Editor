@@ -70,6 +70,11 @@ export class CardEditorContainerComponent implements OnInit, OnDestroy, AfterVie
   editModalVisible = false;
   editingCard: Card | null = null;
 
+  // Rename group modal state
+  renameGroupModalVisible = false;
+  renameGroupCurrentName = '';
+  renameGroupIndex = -1;
+
   // UI state flags
   canUndo = false;
   canRedo = false;
@@ -1070,6 +1075,22 @@ export class CardEditorContainerComponent implements OnInit, OnDestroy, AfterVie
     this.editingCard = null;
   }
 
+  openRenameGroupModal(groupIndex: number): void {
+    const cardData = this.cardDataService.currentCardData;
+    const group = cardData.groups[groupIndex];
+    if (group) {
+      this.renameGroupIndex = groupIndex;
+      this.renameGroupCurrentName = group.name;
+      this.renameGroupModalVisible = true;
+    }
+  }
+
+  onCloseRenameGroupModal(): void {
+    this.renameGroupModalVisible = false;
+    this.renameGroupCurrentName = '';
+    this.renameGroupIndex = -1;
+  }
+
   onCardUpdated(updatedCard: Card): void {
     console.log('CardEditorContainer: Card updated:', updatedCard);
     if (this.editingCard && this.currentSelection) {
@@ -1264,6 +1285,12 @@ export class CardEditorContainerComponent implements OnInit, OnDestroy, AfterVie
         break;
       case 'add-group':
         this.addNewGroup();
+        break;
+      case 'rename-group':
+        // Handle rename group from context menu
+        if (event.groupIndex !== undefined) {
+          this.openRenameGroupModal(event.groupIndex);
+        }
         break;
       case 'group-cards':
         // Handle group multiple cards (placeholder for future implementation)

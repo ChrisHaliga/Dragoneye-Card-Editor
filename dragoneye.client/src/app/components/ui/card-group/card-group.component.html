@@ -2,25 +2,12 @@
 <div class="groups-container">
   <div class="card-group" 
        (contextmenu)="onGroupContextMenu($event)"
-       [attr.data-group-index]="groupIndex"
-       (triggerRename)="startRenaming()">
+       [attr.data-group-index]="groupIndex">
     
     <!-- Simplified group header - just the name -->
     <div class="group-header">
-      <input *ngIf="isRenaming" 
-             type="text" 
-             class="group-name-input"
-             [(ngModel)]="editingName" 
-             (blur)="finishRenaming()" 
-             (keydown.enter)="finishRenaming()"
-             (keydown.escape)="cancelRenaming()"
-             (click)="$event.stopPropagation()">
-
-      <div *ngIf="!isRenaming" 
-           class="group-label" 
-           (dblclick)="startRenaming(); $event.stopPropagation()">
+      <div class="group-label">
         {{ group.name }}
-        <i class="bi bi-pencil edit-icon"></i>
       </div>
     </div>
 

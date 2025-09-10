@@ -1,0 +1,42 @@
+<div class="modal" [class.show]="isVisible" [style.display]="isVisible ? 'flex' : 'none'" (click)="onBackdropClick($event)">
+  <div class="modal-dialog" (click)="onModalClick($event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil me-2"></i>Rename Group
+        </h5>
+        <button type="button" class="btn-close" (click)="cancel()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Group Name</label>
+          <input type="text" 
+                 #groupNameInput
+                 class="form-control" 
+                 [(ngModel)]="editingName" 
+                 (keydown)="onKeyDown($event)"
+                 maxlength="50"
+                 placeholder="Enter group name">
+          <div class="form-text">{{ editingName.length || 0 }}/50 characters</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="d-flex gap-2 w-100 justify-content-end">
+          <button type="button" 
+                  class="btn btn-secondary" 
+                  (click)="cancel()">
+            <i class="bi bi-x-circle me-2"></i>Cancel
+          </button>
+          <button type="button" 
+                  class="btn btn-primary" 
+                  [disabled]="!editingName.trim() || editingName.trim() === currentGroupName"
+                  (click)="confirm()">
+            <i class="bi bi-check-circle me-2"></i>Rename Group
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
