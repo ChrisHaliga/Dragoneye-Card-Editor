@@ -59,6 +59,18 @@
                       {{ element.symbol }} {{ element.name }}
                     </option>
                   </select>
+                  <!-- Element preview -->
+                  <div *ngIf="editingCard.element" class="mt-2">
+                    <small class="text-muted">Selected element:</small>
+                    <div class="d-flex align-items-center mt-1">
+                      <img [src]="getElementImagePath(editingCard.element)" 
+                           class="me-2" 
+                           style="width: 30px; height: 30px; object-fit: contain;"
+                           [alt]="getElementDisplayName(editingCard.element)"
+                           (error)="onElementImageError($event)">
+                      <span class="small">{{ getElementDisplayName(editingCard.element) }}</span>
+                    </div>
+                  </div>
                 </div>
 
                 <div class="mb-3">

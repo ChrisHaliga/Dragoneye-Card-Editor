@@ -4,7 +4,7 @@ import { map } from 'rxjs/operators';
 
 import { ElementData, ElementDisplayInfo } from '../../../core/models/element.model';
 import { CardApiRepository } from '../../../core/repositories/http/card-api.repository';
-import { ELEMENT_SYMBOLS, ELEMENT_CSS_CLASSES, DEFAULT_ELEMENT_KEY, DEFAULT_ELEMENT_SYMBOL } from '../../../core/constants/elements.const';
+import { ELEMENT_SYMBOLS, ELEMENT_IMAGES, ELEMENT_CSS_CLASSES, DEFAULT_ELEMENT_KEY, DEFAULT_ELEMENT_SYMBOL, DEFAULT_ELEMENT_IMAGE } from '../../../core/constants/elements.const';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +27,8 @@ export class ElementService {
       if (elements) {
         this.elementsCache = elements.map(el => ({
           ...el,
-          symbol: ELEMENT_SYMBOLS[el.key] || el.key.charAt(0).toUpperCase()
+          symbol: ELEMENT_SYMBOLS[el.key] || el.key.charAt(0).toUpperCase(),
+          imagePath: ELEMENT_IMAGES[el.key] || DEFAULT_ELEMENT_IMAGE
         }));
         this.elementsMap = new Map(this.elementsCache.map(el => [el.key, el]));
       }
@@ -42,7 +43,8 @@ export class ElementService {
     this.elementsCache = Object.entries(ELEMENT_SYMBOLS).map(([key, symbol]) => ({
       key,
       name: key,
-      symbol
+      symbol,
+      imagePath: ELEMENT_IMAGES[key] || DEFAULT_ELEMENT_IMAGE
     }));
     this.elementsMap = new Map(this.elementsCache.map(el => [el.key, el]));
   }
@@ -57,12 +59,17 @@ export class ElementService {
     return {
       key: DEFAULT_ELEMENT_KEY,
       name: key,
-      symbol: DEFAULT_ELEMENT_SYMBOL
+      symbol: DEFAULT_ELEMENT_SYMBOL,
+      imagePath: DEFAULT_ELEMENT_IMAGE
     };
   }
 
   getElementSymbol(key: string): string {
     return this.getElement(key).symbol;
+  }
+
+  getElementImagePath(key: string): string {
+    return this.getElement(key).imagePath;
   }
 
   getElementName(key: string): string {
@@ -79,7 +86,8 @@ export class ElementService {
     return {
       symbol: element.symbol,
       cssClass: this.getElementCssClass(element.key),
-      name: element.name
+      name: element.name,
+      imagePath: element.imagePath
     };
   }
 
@@ -165,7 +173,8 @@ export class ElementService {
         if (elements) {
           this.elementsCache = elements.map(el => ({
             ...el,
-            symbol: ELEMENT_SYMBOLS[el.key] || el.key.charAt(0).toUpperCase()
+            symbol: ELEMENT_SYMBOLS[el.key] || el.key.charAt(0).toUpperCase(),
+            imagePath: ELEMENT_IMAGES[el.key] || DEFAULT_ELEMENT_IMAGE
           }));
           this.elementsMap = new Map(this.elementsCache.map(el => [el.key, el]));
         }

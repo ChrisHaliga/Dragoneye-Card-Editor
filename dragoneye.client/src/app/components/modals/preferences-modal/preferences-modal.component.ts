@@ -88,13 +88,13 @@ export class PreferencesModalComponent implements OnInit, OnDestroy {
         console.error('Failed to load elements:', error);
         // Use fallback elements
         this.availableElements = [
-          { key: 'pyr', name: 'Pyro', symbol: '🔥' },
-          { key: 'hyd', name: 'Hydro', symbol: '💧' },
-          { key: 'geo', name: 'Geo', symbol: '🌍' },
-          { key: 'aer', name: 'Aero', symbol: '💨' },
-          { key: 'nyx', name: 'Nyx', symbol: '🌑' },
-          { key: 'lux', name: 'Lux', symbol: '☀️' },
-          { key: 'arc', name: 'Arcane', symbol: '✨' }
+          { key: 'pyr', name: 'Pyro', symbol: '🔥', imagePath: '/pyr.png' },
+          { key: 'hyd', name: 'Hydro', symbol: '💧', imagePath: '/hyd.png' },
+          { key: 'geo', name: 'Geo', symbol: '🌍', imagePath: '/geo.png' },
+          { key: 'aer', name: 'Aero', symbol: '💨', imagePath: '/aer.png' },
+          { key: 'nyx', name: 'Nyx', symbol: '🌑', imagePath: '/nyx.png' },
+          { key: 'lux', name: 'Lux', symbol: '☀️', imagePath: '/lux.png' },
+          { key: 'arc', name: 'Arcane', symbol: '✨', imagePath: '/arc.png' }
         ];
       }
     });

@@ -40,6 +40,24 @@ export class CardDisplayComponent {
     return this.elementService.getElementSymbol(elementKey);
   }
 
+  getElementImagePath(elementKey: string): string {
+    if (!elementKey) return '/arc.png'; // Default fallback
+    return this.elementService.getElementImagePath(elementKey);
+  }
+
+  onElementImageError(event: Event): void {
+    // Hide the image and show the fallback text
+    const image = event.target as SVGImageElement;
+    if (image) {
+      image.style.display = 'none';
+      // Find the fallback text element and show it
+      const fallbackText = image.parentElement?.querySelector('.element-fallback-text') as SVGTextElement;
+      if (fallbackText) {
+        fallbackText.style.display = 'block';
+      }
+    }
+  }
+
   getDetailLayoutsForCard(card: Card): DetailLayout[] {
     if (!card) return [];
     

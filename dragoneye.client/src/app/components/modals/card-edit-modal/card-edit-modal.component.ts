@@ -6,6 +6,7 @@ interface ElementOption {
   key: string;
   symbol: string;
   name: string;
+  imagePath: string;
 }
 
 @Component({
@@ -38,13 +39,13 @@ export class CardEditModalComponent implements OnChanges, AfterViewInit {
 
   // V2-only element definitions (no V1 service dependency)
   readonly availableElements: ElementOption[] = [
-    { key: 'pyr', symbol: '🔥', name: 'Pyr (Fire)' },
-    { key: 'hyd', symbol: '💧', name: 'Hyd (Water)' },
-    { key: 'geo', symbol: '🌍', name: 'Geo (Earth)' },
-    { key: 'aer', symbol: '💨', name: 'Aer (Air)' },
-    { key: 'nyx', symbol: '🌑', name: 'Nyx (Dark)' },
-    { key: 'lux', symbol: '☀️', name: 'Lux (Light)' },
-    { key: 'arc', symbol: '✶', name: 'Arc (Arcane)' }
+    { key: 'pyr', symbol: '🔥', name: 'Pyr (Fire)', imagePath: '/pyr.png' },
+    { key: 'hyd', symbol: '💧', name: 'Hyd (Water)', imagePath: '/hyd.png' },
+    { key: 'geo', symbol: '🌍', name: 'Geo (Earth)', imagePath: '/geo.png' },
+    { key: 'aer', symbol: '💨', name: 'Aer (Air)', imagePath: '/aer.png' },
+    { key: 'nyx', symbol: '🌑', name: 'Nyx (Dark)', imagePath: '/nyx.png' },
+    { key: 'lux', symbol: '☀️', name: 'Lux (Light)', imagePath: '/lux.png' },
+    { key: 'arc', symbol: '✶', name: 'Arc (Arcane)', imagePath: '/arc.png' }
   ];
 
   // V2-only card type definitions
@@ -350,6 +351,33 @@ export class CardEditModalComponent implements OnChanges, AfterViewInit {
   getElementDisplayName(elementKey: string): string {
     const element = this.availableElements.find(e => e.key === elementKey);
     return element ? `${element.symbol} ${element.name}` : elementKey;
+  }
+
+  getElementImagePath(elementKey: string): string {
+    const element = this.availableElements.find(e => e.key === elementKey);
+    return element ? element.imagePath : '/arc.png'; // Default fallback
+  }
+
+  onElementImageError(event: Event): void {
+    // Replace broken image with fallback emoji or text
+    const img = event.target as HTMLImageElement;
+    if (img) {
+      const elementKey = this.editingCard?.element;
+      const element = this.availableElements.find(e => e.key === elementKey);
+      if (element) {
+        // Create a fallback by replacing the img with a span containing the emoji
+        const span = document.createElement('span');
+        span.textContent = element.symbol;
+        span.className = 'me-2';
+        span.style.fontSize = '24px';
+        span.style.width = '30px';
+        span.style.height = '30px';
+        span.style.display = 'inline-flex';
+        span.style.alignItems = 'center';
+        span.style.justifyContent = 'center';
+        img.parentNode?.replaceChild(span, img);
+      }
+    }
   }
 
   isValidElement(elementKey: string): boolean {
