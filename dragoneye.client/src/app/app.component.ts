@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ThemeService } from './services/theme.service';
 
 @Component({
@@ -7,11 +7,13 @@ import { ThemeService } from './services/theme.service';
   standalone: false,
   styleUrl: './app.component.css'
 })
-export class AppComponent {
-  // Feature flag to switch between v1 and v2
-  useV2 = true; // Set to true to use v2 architecture
-
+export class AppComponent implements OnInit {
+  
   constructor(private themeService: ThemeService) {
+  }
+
+  ngOnInit(): void {
+    // Initialize theme system
     this.themeService.initializeTheme();
   }
 }

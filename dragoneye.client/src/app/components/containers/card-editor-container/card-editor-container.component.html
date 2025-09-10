@@ -1,0 +1,319 @@
+<!-- V2 Card Editor Container -->
+<div class="card-editor-v2" 
+     [class.loading]="isLoading"
+     [class.has-unsaved-changes]="hasUnsavedChanges"
+     (contextmenu)="onBackgroundContextMenu($event)">
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="app-branding">
+        <img src="/Logo.png" alt="Dragoneye Logo" class="brand-logo">
+        <span class="brand-name">Dragoneye</span>
+      </div>
+      
+      <div class="toolbar-menu">
+        <div class="dropdown">
+          <button class="toolbar-button dropdown-toggle" data-bs-toggle="dropdown">
+            File
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#" (click)="saveFile(); $event.preventDefault()">
+              <i class="bi bi-cloud-upload me-2"></i>Save
+            </a></li>
+            <li><a class="dropdown-item" href="#" (click)="saveAsFile(); $event.preventDefault()">
+              <i class="bi bi-cloud-upload-fill me-2"></i>Save As...
+            </a></li>
+            <li><a class="dropdown-item" href="#" (click)="loadFile(); $event.preventDefault()">
+              <i class="bi bi-folder2-open me-2"></i>Load
+            </a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" (click)="exportAsJSON(); $event.preventDefault()">
+              <i class="bi bi-download me-2"></i>Export as JSON
+            </a></li>
+            <li><a class="dropdown-item" href="#" (click)="exportAsSVG(); $event.preventDefault()">
+              <i class="bi bi-file-earmark-image me-2"></i>Export as SVG
+            </a></li>
+            <li><label class="dropdown-item mb-0" for="importFile">
+              <i class="bi bi-upload me-2"></i>Import
+            </label></li>
+            <input type="file" id="importFile" class="d-none" accept=".json" (change)="importFile($event)">
+          </ul>
+        </div>
+
+        <div class="dropdown">
+          <button class="toolbar-button dropdown-toggle" data-bs-toggle="dropdown">
+            Edit
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#" [class.disabled]="!canUndo" (click)="undo(); $event.preventDefault()">
+              <i class="bi bi-arrow-clockwise me-2"></i>Undo
+            </a></li>
+            <li><a class="dropdown-item" href="#" [class.disabled]="!canRedo" (click)="redo(); $event.preventDefault()">
+              <i class="bi bi-arrow-counterclockwise me-2"></i>Redo
+            </a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" (click)="addNewGroup(); $event.preventDefault()">
+              <i class="bi bi-plus-circle me-2"></i>New Group
+            </a></li>
+            <li><a class="dropdown-item" href="#" [class.disabled]="!currentCard" (click)="duplicateCurrentCard(); $event.preventDefault()">
+              <i class="bi bi-files me-2"></i>Duplicate Card
+            </a></li>
+            <li><a class="dropdown-item text-danger" href="#" [class.disabled]="!currentCard" (click)="deleteCurrentCard(); $event.preventDefault()">
+              <i class="bi bi-trash me-2"></i>Delete Card
+            </a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" (click)="openPreferences(); $event.preventDefault()">
+              <i class="bi bi-gear me-2"></i>Preferences
+            </a></li>
+          </ul>
+        </div>
+
+        <div class="dropdown">
+          <button class="toolbar-button dropdown-toggle" data-bs-toggle="dropdown">
+            View
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#" (click)="zoomIn(); $event.preventDefault()">
+              <i class="bi bi-zoom-in me-2"></i>Zoom In
+            </a></li>
+            <li><a class="dropdown-item" href="#" (click)="zoomOut(); $event.preventDefault()">
+              <i class="bi bi-zoom-out me-2"></i>Zoom Out
+            </a></li>
+            <li><a class="dropdown-item" href="#" (click)="resetView(); $event.preventDefault()">
+              <i class="bi bi-arrows-fullscreen me-2"></i>Reset Zoom
+            </a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" (click)="focusOnSelectedCard(); $event.preventDefault()">
+              <i class="bi bi-bullseye me-2"></i>Focus on Card
+            </a></li>
+          </ul>
+        </div>
+
+        <div class="dropdown">
+          <button class="toolbar-button dropdown-toggle" data-bs-toggle="dropdown">
+            Help
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#" (click)="openGettingStarted(); $event.preventDefault()">
+              <i class="bi bi-question-circle me-2"></i>Getting Started
+            </a></li>
+            <li><a class="dropdown-item" href="#" (click)="openKeyboardShortcuts(); $event.preventDefault()">
+              <i class="bi bi-keyboard me-2"></i>Keyboard Shortcuts
+            </a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#" (click)="openAbout(); $event.preventDefault()">
+              <i class="bi bi-info-circle me-2"></i>About Dragoneye
+            </a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="toolbar-center">
+      <ng-container *ngIf="fileState$ | async as fileState">
+        <span class="file-name">{{ fileState.filename || 'Untitled' }}</span>
+        <span class="unsaved-indicator" *ngIf="fileState.hasUnsavedChanges">*</span>
+      </ng-container>
+    </div>
+
+    <div class="toolbar-right">
+      <span class="copyright">© 2025 Christian Haliga</span>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <div class="main-content">
+    <div class="card-viewport" #cardViewport>
+      
+      <!-- Selection Box Overlay -->
+      <div class="selection-box-overlay" 
+           *ngIf="selectionBox$ | async as selectionBox"
+           [style.left.px]="getSelectionBoxLeft(selectionBox)"
+           [style.top.px]="getSelectionBoxTop(selectionBox)"
+           [style.width.px]="getSelectionBoxWidth(selectionBox)"
+           [style.height.px]="getSelectionBoxHeight(selectionBox)">
+      </div>
+      
+      <!-- Zoom Controls -->
+      <div class="zoom-controls">
+        <button class="zoom-btn" 
+                (click)="zoomOut()" 
+                [disabled]="currentZoom <= 0.1"
+                title="Zoom Out">
+          <i class="bi bi-dash"></i>
+        </button>
+        <span class="zoom-level">{{ zoomPercentage }}%</span>
+        <button class="zoom-btn" 
+                (click)="zoomIn()" 
+                [disabled]="currentZoom >= 5"
+                title="Zoom In">
+          <i class="bi bi-plus"></i>
+        </button>
+        <button class="zoom-btn" 
+                (click)="resetView()" 
+                title="Reset View">
+          <i class="bi bi-house"></i>
+        </button>
+      </div>
+      
+      <!-- Viewport Content -->
+      <div class="viewport-content" #viewportContent>
+        
+        <!-- Selection Bounds Overlay - Inside transformed content -->
+        <app-selection-bounds
+          [selectedCards]="selectedCards"
+          [viewport]="getViewportElement()"
+          [viewportContent]="getViewportContentElement()">
+        </app-selection-bounds>
+        
+        <!-- Card Data Display -->
+        <div class="card-data-display" *ngIf="cardData$ | async as cardData">
+          <div class="groups-container">
+            <app-card-group
+              *ngFor="let group of cardData.groups; let groupIndex = index"
+              [group]="group"
+              [groupIndex]="groupIndex"
+              [selectedCards]="selectedCards"
+              [allGroups]="cardData.groups"
+              (cardSelected)="onCardSelected($event)"
+              (cardAdded)="onCardAdded($event)"
+              (groupRenamed)="onGroupRenamed($event)"
+              (cardDeleted)="onCardDeleted($event)"
+              (cardMoved)="onCardMoved($event)"
+              (cardEditRequested)="onCardEditRequested($event)">
+            </app-card-group>
+            
+            <!-- Add Group Button -->
+            <div class="add-group-section" *ngIf="cardData.groups.length > 0">
+              <button class="add-group-btn" (click)="addNewGroup()">
+                <i class="bi bi-plus-circle me-2"></i>Add New Group
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Empty State -->
+        <div class="no-data-message" *ngIf="cardData$ | async as cardData; else loadingState">
+          <div *ngIf="cardData.groups.length === 0" class="empty-state">
+            <div class="empty-icon">
+              <i class="bi bi-collection"></i>
+            </div>
+            <h4>No Card Groups</h4>
+            <p>Start by creating your first group of cards</p>
+            <button class="btn btn-primary btn-lg" (click)="createFirstGroup()">
+              <i class="bi bi-plus-circle me-2"></i>Create First Group
+            </button>
+          </div>
+        </div>
+        
+        <!-- Loading State -->
+        <ng-template #loadingState>
+          <div class="loading-message" *ngIf="isLoading">
+            <div class="loading-icon">
+              <i class="bi bi-arrow-clockwise spin"></i>
+            </div>
+            <h4>Loading Card Data</h4>
+            <p>Fetching your cards from the server...</p>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <div class="status-left">
+      <ng-container *ngIf="selection$ | async as selection">
+        <span>Group {{ selection.selectedGroupIndex + 1 }}, Card {{ selection.selectedCardIndex + 1 }}</span>
+      </ng-container>
+    </div>
+    
+    <div class="status-center">
+      <ng-container *ngIf="cardData$ | async as cardData">
+        <ng-container *ngIf="selection$ | async as selection">
+          <span *ngIf="!selection.isMultiSelect">
+            {{ cardData.groups.length }} groups, {{ getTotalCardCount(cardData) }} cards total
+          </span>
+          <span *ngIf="selection.isMultiSelect" class="multi-selection-status">
+            <i class="bi bi-check2-square me-1"></i>
+            {{ selection.selectedCards.length }} cards selected
+          </span>
+        </ng-container>
+      </ng-container>
+    </div>
+    
+    <div class="status-right">
+      <span>Zoom: {{ zoomPercentage }}%</span>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" *ngIf="isLoading">
+  <div class="loading-spinner">
+    <i class="bi bi-arrow-clockwise spin"></i>
+    <span>Loading...</span>
+  </div>
+</div>
+
+<!-- V2 Modal Components -->
+<app-file-manager-modal (fileSelected)="onFileSelected($event)"></app-file-manager-modal>
+<app-save-as-modal (fileNameEntered)="onSaveAsFilename($event)"></app-save-as-modal>
+<app-preferences-modal></app-preferences-modal>
+
+<!-- V2 Help Modals -->
+<app-getting-started-modal></app-getting-started-modal>
+<app-keyboard-shortcuts-modal></app-keyboard-shortcuts-modal>
+<app-about-modal></app-about-modal>
+
+<!-- V2 Delete Confirmation Modal -->
+<app-delete-confirmation-modal (confirmed)="onDeleteConfirmed($event)"></app-delete-confirmation-modal>
+
+<!-- Context Menu -->
+<app-context-menu (contextMenuAction)="onContextMenuAction($event)"></app-context-menu>
+
+<!-- Notification Container -->
+<app-notification-container></app-notification-container>
+
+<!-- Card Edit Modal - Outside viewport hierarchy -->
+<app-card-edit-modal
+  [card]="editingCard"
+  [isVisible]="editModalVisible"
+  (closed)="onCloseEditModal()"
+  (cardUpdated)="onCardUpdated($event)">
+</app-card-edit-modal>
+
+<!-- Drag Preview -->
+<div *ngIf="dragState$ | async as dragState" 
+     class="drag-preview"
+     [style.display]="dragState.isDragging ? 'block' : 'none'"
+     [style.left.px]="dragState.previewX"
+     [style.top.px]="dragState.previewY">
+  
+  <!-- Single Card Preview -->
+  <div *ngIf="!dragState.isMultiDrag" class="single-card-preview">
+    <app-card-display
+      [card]="dragState.draggedCard"
+      [groupIndex]="dragState.fromGroup"
+      [cardIndex]="dragState.draggedCardIndex"
+      [isSelected]="false">
+    </app-card-display>
+  </div>
+  
+  <!-- Multi-Card Preview -->
+  <div *ngIf="dragState.isMultiDrag" class="multi-card-preview">
+    <div class="card-count-badge">{{ dragState.draggedCards.length }}</div>
+    <div *ngFor="let card of dragState.draggedCards; let i = index; trackBy: trackByCardIndex" 
+         class="preview-card"
+         [style.transform]="'translate(' + (i * 8) + 'px, ' + (i * 8) + 'px)'"
+         [style.z-index]="dragState.draggedCards.length - i">
+      <app-card-display
+        [card]="card"
+        [groupIndex]="dragState.fromGroup"
+        [cardIndex]="dragState.draggedCardIndices[i]"
+        [isSelected]="false">
+      </app-card-display>
+    </div>
+  </div>
+</div>

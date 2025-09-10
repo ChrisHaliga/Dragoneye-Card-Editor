@@ -1,0 +1,160 @@
+.card-container {
+  position: relative;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+  width: 250px;
+}
+
+.card-container:hover {
+  transform: translateY(-5px);
+}
+
+.card-container:active {
+  transform: translateY(-2px);
+}
+
+.card-container.editing-card {
+  /* Use outline instead of border to avoid affecting layout */
+  outline: 3px solid #ffd700;
+  outline-offset: -3px;
+  border-radius: 15px;
+  background: rgba(255, 215, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.card-container.selected-card {
+  position: relative;
+}
+
+.card-container.selected-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: 3px solid #ffd700;
+  border-radius: 15px;
+  pointer-events: none;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.edit-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #ffd700;
+  color: #333;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  z-index: 15;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.primary-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 12px;
+  height: 12px;
+  background: #ffd700;
+  border: 2px solid white;
+  border-radius: 50%;
+  z-index: 16;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.group-card {
+  width: 250px;
+  height: auto;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.2));
+  user-select: none;
+  transition: filter 0.3s ease;
+  border-radius: 12px;
+}
+
+.card-container:hover .group-card {
+  filter: drop-shadow(0 12px 32px rgba(0, 0, 0, 0.3));
+}
+
+.card-delete-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  z-index: 15;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.2s ease;
+  padding: 0;
+  font-size: 0.75rem;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card-container:hover .card-delete-btn {
+  opacity: 1;
+}
+
+.card-delete-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Loading placeholder for null cards */
+.card-placeholder {
+  width: 250px;
+  height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8f9fa;
+  border: 2px dashed #ddd;
+  border-radius: 12px;
+}
+
+.loading-card {
+  color: #666;
+  font-size: 14px;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card-container {
+    width: 200px;
+  }
+  
+  .group-card {
+    width: 200px;
+  }
+  
+  .card-placeholder {
+    width: 200px;
+    height: 280px;
+  }
+}
+
+@media (max-width: 576px) {
+  .card-container {
+    width: 180px;
+  }
+  
+  .group-card {
+    width: 180px;
+  }
+  
+  .card-placeholder {
+    width: 180px;
+    height: 252px;
+  }
+}

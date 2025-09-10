@@ -1,0 +1,104 @@
+<div class="card-container"
+     [class.selected-card]="isSelected"
+     [attr.data-group-index]="groupIndex"
+     [attr.data-card-index]="cardIndex"
+     (click)="onCardClick($event)"
+     data-interactive>
+  
+  <!-- Only render if card exists -->
+  <ng-container *ngIf="card">
+    <svg viewBox="0 0 200 280" 
+         class="group-card">
+      <defs>
+        <radialGradient [id]="'cardBg' + groupIndex + cardIndex" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" style="stop-color:#f4f1e8" />
+          <stop offset="100%" style="stop-color:#d4c4a0" />
+        </radialGradient>
+        <filter [id]="'cardShadow' + groupIndex + cardIndex">
+          <feDropShadow dx="2" dy="3" stdDeviation="2" flood-opacity="0.3" />
+        </filter>
+      </defs>
+
+      <!-- Card Base -->
+      <rect x="10" y="10" width="180" height="260" 
+            [attr.fill]="'url(#cardBg' + groupIndex + cardIndex + ')'" 
+            stroke="#8b7355" stroke-width="2" 
+            [attr.filter]="'url(#cardShadow' + groupIndex + cardIndex + ')'"/>
+      
+      <!-- Title Background -->
+      <rect x="20" y="20" width="145" height="24" fill="white" stroke="#666" stroke-width="1" />
+      
+      <!-- Card Title -->
+      <text x="25" y="36" font-size="11" font-weight="bold" fill="#333" font-family="serif">
+        {{ card.title }}
+      </text>
+
+      <!-- Element Circle -->
+      <circle cx="165" cy="32" r="16" fill="white" stroke="#666" stroke-width="1" />
+      <text x="165" y="38" text-anchor="middle" font-size="16" fill="#333">
+        {{ getElementSymbol(card.element) }}
+      </text>
+
+      <!-- Card Type -->
+      <rect x="25" y="50" width="40" height="12" fill="#333" />
+      <text x="45" y="59" text-anchor="middle" fill="white" font-size="8" font-family="serif">
+        {{ (card.type || 'CREATURE').toUpperCase() }}
+      </text>
+
+      <!-- Background Image Area -->
+      <rect x="20" y="70" width="160" height="185" fill="#f8f9fa" stroke="#ddd" stroke-width="1" />
+      <image *ngIf="card.backgroundImage" 
+             [attr.href]="card.backgroundImage" 
+             x="20" y="70" width="160" height="185" 
+             preserveAspectRatio="xMidYMid slice" />
+      <text *ngIf="!card.backgroundImage" x="100" y="160" text-anchor="middle" fill="#999" font-size="10">
+        No Image
+      </text>
+
+      <!-- Details Background -->
+      <rect x="20" y="180" width="160" height="75" fill="white" fill-opacity="0.85" stroke="#666" stroke-width="1" />
+
+      <!-- Dynamic detail layout for each card -->
+      <g *ngFor="let layout of getDetailLayoutsForCard(card); let i = index">
+        <!-- AP Cost Circles (white) -->
+        <circle *ngFor="let ap of getCircles(layout.detail.apCost); let j = index"
+                [attr.cx]="28 + (j * 8)" 
+                [attr.cy]="layout.yPosition" 
+                r="3" fill="white" stroke="#333" stroke-width="0.5" />
+        
+        <!-- SP Cost Circles (black) -->
+        <circle *ngFor="let sp of getCircles(layout.detail.spCost); let j = index"
+                [attr.cx]="28 + ((layout.detail.apCost + j) * 8)" 
+                [attr.cy]="layout.yPosition" 
+                r="3" fill="#333" stroke="#333" stroke-width="0.5" />
+
+        <!-- Detail Name -->
+        <text [attr.x]="layout.titleX" 
+              [attr.y]="layout.yPosition + 3" 
+              font-size="7" fill="#333" font-family="serif" font-weight="bold">
+          {{ layout.detail.name }}
+        </text>
+
+        <!-- Detail Description -->
+        <text x="28" [attr.y]="layout.yPosition + 11" font-size="6" fill="#333" font-family="serif">
+          <tspan *ngFor="let line of layout.lines; let lineIndex = index"
+                 x="28" 
+                 [attr.dy]="lineIndex === 0 ? 0 : 7">
+            {{ line.text }}
+          </tspan>
+        </text>
+      </g>
+
+      <!-- Hidden Details Indicator -->
+      <text *ngIf="getHiddenDetailsCountForCard(card) > 0" 
+            x="100" y="245" text-anchor="middle" fill="#666" font-size="8" font-family="serif">
+        +{{ getHiddenDetailsCountForCard(card) }} more...
+      </text>
+    </svg>
+  </ng-container>
+  
+  <!-- Fallback for null card -->
+  <div *ngIf="!card" class="card-placeholder">
+    <div class="loading-card">Loading...</div>
+  </div>
+</div>
