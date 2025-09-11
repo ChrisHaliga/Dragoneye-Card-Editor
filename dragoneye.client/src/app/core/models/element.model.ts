@@ -6,18 +6,3 @@ export interface ElementData {
   symbol: string;
   imagePath: string;
 }
-
-export interface ElementSymbolMap {
-  [key: string]: string;
-}
-
-export interface ElementImageMap {
-  [key: string]: string;
-}
-
-export interface ElementDisplayInfo {
-  symbol: string;
-  cssClass: string;
-  name: string;
-  imagePath: string;
-}

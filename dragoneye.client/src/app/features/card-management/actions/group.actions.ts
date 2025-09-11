@@ -396,7 +396,9 @@ export class GroupActions {
 
     group.cards.forEach(card => {
       // Count elements
-      elementDistribution[card.element] = (elementDistribution[card.element] || 0) + 1;
+      card.elements.forEach(element => {
+        elementDistribution[element] = (elementDistribution[element] || 0) + 1;
+      });
       
       // Count types
       typeDistribution[card.type] = (typeDistribution[card.type] || 0) + 1;

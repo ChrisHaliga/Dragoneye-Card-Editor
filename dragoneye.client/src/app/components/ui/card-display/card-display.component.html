@@ -33,24 +33,36 @@
         {{ card.title }}
       </text>
 
-      <!-- Element Circle -->
+      <!-- Timer Circle (empty for now, ready for countdown timer) -->
       <circle cx="165" cy="32" r="16" fill="white" stroke="#666" stroke-width="1" />
-      <image [attr.href]="getElementImagePath(card.element)" 
-             x="144" y="11" width="42" height="42" 
-             preserveAspectRatio="xMidYMid meet"
-             (error)="onElementImageError($event)" />
-      <!-- Fallback text shown when image fails to load -->
-      <text x="165" y="38" text-anchor="middle" font-size="12" fill="#333" 
-            [style.display]="'none'" 
-            class="element-fallback-text">
-        {{ getElementSymbol(card.element) }}
-      </text>
+      <!-- Future timer content will go here -->
 
       <!-- Card Type -->
       <rect x="25" y="50" width="40" height="12" fill="#333" />
       <text x="45" y="59" text-anchor="middle" fill="white" font-size="8" font-family="serif">
         {{ (card.type || 'ACTION').toUpperCase() }}
       </text>
+
+      <!-- Element Icons (to the right of type) -->
+      <g *ngFor="let elementKey of getDisplayElements(card); let i = index">
+        <image [attr.href]="getElementImagePath(elementKey)" 
+               [attr.x]="65 + (i * 21)" 
+               [attr.y]="43" 
+               width="26" 
+               height="26" 
+               preserveAspectRatio="xMidYMid meet"
+               (error)="onElementImageError($event)" />
+        <!-- Fallback text for each element -->
+        <text [attr.x]="84 + (i * 28)" 
+              [attr.y]="59" 
+              text-anchor="middle" 
+              font-size="8" 
+              fill="#333" 
+              [style.display]="'none'"
+              class="element-fallback-text">
+          {{ getElementSymbol(elementKey) }}
+        </text>
+      </g>
 
       <!-- Background Image Area -->
       <rect x="20" y="70" width="160" height="185" fill="#f8f9fa" stroke="#ddd" stroke-width="1" />

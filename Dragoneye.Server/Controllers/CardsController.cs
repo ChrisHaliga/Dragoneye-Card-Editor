@@ -9,13 +9,13 @@ namespace Dragoneye.Server.Controllers
     {
         private static readonly List<ElementData> Elements = new()
         {
-            new() { Key = "pyr", Name = "pyr" },
-            new() { Key = "hyd", Name = "hyd" },
-            new() { Key = "geo", Name = "geo" },
-            new() { Key = "aer", Name = "aer" },
-            new() { Key = "nyx", Name = "nyx" },
-            new() { Key = "lux", Name = "lux" },
-            new() { Key = "arc", Name = "arc" }
+            new() { Key = "pyr", Name = "Pyro", Symbol = "🔥", ImagePath = "/pyr.png" },
+            new() { Key = "hyd", Name = "Hydro", Symbol = "💧", ImagePath = "/hyd.png" },
+            new() { Key = "geo", Name = "Geo", Symbol = "🌍", ImagePath = "/geo.png" },
+            new() { Key = "aer", Name = "Aero", Symbol = "🌪", ImagePath = "/aer.png" },
+            new() { Key = "nyx", Name = "Nyx", Symbol = "🌑", ImagePath = "/nyx.png" },
+            new() { Key = "lux", Name = "Lux", Symbol = "☀️", ImagePath = "/lux.png" },
+            new() { Key = "arc", Name = "Arcane", Symbol = "⚡", ImagePath = "/arc.png" }
         };
 
         // In-memory storage for multiple card files
@@ -36,7 +36,7 @@ namespace Dragoneye.Server.Controllers
                             {
                                 Title = "Flame Strike",
                                 Type = "Spell",
-                                Element = "pyr",
+                                Elements = new List<string> { "pyr" },
                                 BackgroundImage = "https://pbs.twimg.com/media/EFE7BgOVAAAYQoN.jpg",
                                 Details = new List<CardDetail>
                                 {
@@ -48,7 +48,7 @@ namespace Dragoneye.Server.Controllers
                             {
                                 Title = "Fireball",
                                 Type = "Spell",
-                                Element = "pyr",
+                                Elements = new List<string> { "pyr", "arc" },
                                 BackgroundImage = "https://i.redd.it/g2aexsgugxn31.jpg",
                                 Details = new List<CardDetail>
                                 {
@@ -67,7 +67,7 @@ namespace Dragoneye.Server.Controllers
                             {
                                 Title = "Healing Wave",
                                 Type = "Spell",
-                                Element = "hyd",
+                                Elements = new List<string> { "hyd", "lux" },
                                 BackgroundImage = "https://yourturndad.com/wp-content/uploads/2019/02/cure-wounds-1.jpg",
                                 Details = new List<CardDetail>
                                 {

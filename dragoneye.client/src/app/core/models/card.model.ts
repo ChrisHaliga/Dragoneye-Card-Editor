@@ -10,7 +10,7 @@ export interface CardDetail {
 export interface Card {
   title: string;
   type: string;
-  element: string;
+  elements: string[];
   backgroundImage?: string;
   details: CardDetail[];
 }

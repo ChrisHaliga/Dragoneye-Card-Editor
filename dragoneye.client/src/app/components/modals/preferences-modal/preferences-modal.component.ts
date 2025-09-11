@@ -88,13 +88,13 @@ export class PreferencesModalComponent implements OnInit, OnDestroy {
         console.error('Failed to load elements:', error);
         // Use fallback elements
         this.availableElements = [
-          { key: 'pyr', name: 'Pyro', symbol: '🔥', imagePath: '/pyr.png' },
-          { key: 'hyd', name: 'Hydro', symbol: '💧', imagePath: '/hyd.png' },
-          { key: 'geo', name: 'Geo', symbol: '🌍', imagePath: '/geo.png' },
-          { key: 'aer', name: 'Aero', symbol: '💨', imagePath: '/aer.png' },
-          { key: 'nyx', name: 'Nyx', symbol: '🌑', imagePath: '/nyx.png' },
-          { key: 'lux', name: 'Lux', symbol: '☀️', imagePath: '/lux.png' },
-          { key: 'arc', name: 'Arcane', symbol: '✨', imagePath: '/arc.png' }
+          { key: 'pyr', name: 'Pyro', symbol: '🔥', imagePath: '/runes/pyr.png' },
+          { key: 'hyd', name: 'Hydro', symbol: '💧', imagePath: '/runes/hyd.png' },
+          { key: 'geo', name: 'Geo', symbol: '🌍', imagePath: '/runes/geo.png' },
+          { key: 'aer', name: 'Aero', symbol: '💨', imagePath: '/runes/aer.png' },
+          { key: 'nyx', name: 'Nyx', symbol: '🌑', imagePath: '/runes/nyx.png' },
+          { key: 'lux', name: 'Lux', symbol: '☀️', imagePath: '/runes/lux.png' },
+          { key: 'arc', name: 'Arcane', symbol: '✨', imagePath: '/runes/arc.png' }
         ];
       }
     });

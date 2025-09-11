@@ -25,7 +25,7 @@ export class CardActions {
         const defaultCard: Card = {
           title: 'New Card',
           type: 'Action',
-          element: this.elementService.getDefaultElement().key,
+          elements: [this.elementService.getDefaultElement().key],
           backgroundImage: '',
           details: [
             {
@@ -332,7 +332,7 @@ export class CardActions {
         return;
       }
 
-      this.updateCard(groupIndex, cardIndex, { element }).subscribe(result => {
+      this.updateCard(groupIndex, cardIndex, { elements: [element] }).subscribe(result => {
         observer.next(result);
         observer.complete();
       });
@@ -345,7 +345,7 @@ export class CardActions {
 
   getCardsByElement(element: string): Card[] {
     const allCards = this.cardDataService.getAllCards();
-    return allCards.filter(card => card.element === element);
+    return allCards.filter(card => card.elements.includes(element));
   }
 
   getCardsByType(type: string): Card[] {
@@ -360,7 +360,7 @@ export class CardActions {
     return allCards.filter(card =>
       card.title.toLowerCase().includes(lowerQuery) ||
       card.type.toLowerCase().includes(lowerQuery) ||
-      card.element.toLowerCase().includes(lowerQuery) ||
+      card.elements.some(element => element.toLowerCase().includes(lowerQuery)) ||
       card.details.some(detail =>
         detail.name.toLowerCase().includes(lowerQuery) ||
         detail.details.toLowerCase().includes(lowerQuery)
@@ -397,8 +397,10 @@ export class CardActions {
       // Count by type
       cardsByType[card.type] = (cardsByType[card.type] || 0) + 1;
       
-      // Count by element
-      cardsByElement[card.element] = (cardsByElement[card.element] || 0) + 1;
+      // Count by elements
+      card.elements.forEach(element => {
+        cardsByElement[element] = (cardsByElement[element] || 0) + 1;
+      });
       
       // Sum complexity
       totalComplexity += this.cardValidationService.getCardComplexityScore(card);

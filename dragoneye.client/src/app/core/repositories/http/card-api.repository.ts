@@ -114,7 +114,7 @@ export class CardApiRepository implements ICardApiRepository {
       errors.push('Card type is required');
     }
 
-    if (!card.element || card.element.trim().length === 0) {
+    if (!card.elements || card.elements.length === 0) {
       errors.push('Card element is required');
     }
 
@@ -170,7 +170,7 @@ export class CardApiRepository implements ICardApiRepository {
             if (
               card.title.toLowerCase().includes(lowerQuery) ||
               card.type.toLowerCase().includes(lowerQuery) ||
-              card.element.toLowerCase().includes(lowerQuery) ||
+              card.elements.some(element => element.toLowerCase().includes(lowerQuery)) ||
               card.details.some(detail =>
                 detail.name.toLowerCase().includes(lowerQuery) ||
                 detail.details.toLowerCase().includes(lowerQuery)
@@ -210,8 +210,10 @@ export class CardApiRepository implements ICardApiRepository {
             // Count by type
             cardsByType[card.type] = (cardsByType[card.type] || 0) + 1;
             
-            // Count by element
-            cardsByElement[card.element] = (cardsByElement[card.element] || 0) + 1;
+            // Count by elements
+            card.elements.forEach(element => {
+              cardsByElement[element] = (cardsByElement[element] || 0) + 1;
+            });
           });
         });
 

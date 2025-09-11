@@ -287,7 +287,7 @@ export class CardEditorContainerComponent implements OnInit, OnDestroy, AfterVie
     const defaultCard: Partial<Card> = {
       title: 'New Card',
       type: 'Action',
-      element: 'arc',
+      elements: ['arc'],
       details: [{
         name: 'Basic Effect',
         details: 'Describe what this card does...',

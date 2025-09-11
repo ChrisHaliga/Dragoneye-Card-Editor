@@ -39,13 +39,13 @@ export class CardEditModalComponent implements OnChanges, AfterViewInit {
 
   // V2-only element definitions (no V1 service dependency)
   readonly availableElements: ElementOption[] = [
-    { key: 'pyr', symbol: '🔥', name: 'Pyr (Fire)', imagePath: '/pyr.png' },
-    { key: 'hyd', symbol: '💧', name: 'Hyd (Water)', imagePath: '/hyd.png' },
-    { key: 'geo', symbol: '🌍', name: 'Geo (Earth)', imagePath: '/geo.png' },
-    { key: 'aer', symbol: '💨', name: 'Aer (Air)', imagePath: '/aer.png' },
-    { key: 'nyx', symbol: '🌑', name: 'Nyx (Dark)', imagePath: '/nyx.png' },
-    { key: 'lux', symbol: '☀️', name: 'Lux (Light)', imagePath: '/lux.png' },
-    { key: 'arc', symbol: '✶', name: 'Arc (Arcane)', imagePath: '/arc.png' }
+    { key: 'pyr', symbol: '🔥', name: 'Pyr (Fire)', imagePath: '/runes/pyr.png' },
+    { key: 'hyd', symbol: '💧', name: 'Hyd (Water)', imagePath: '/runes/hyd.png' },
+    { key: 'geo', symbol: '🌍', name: 'Geo (Earth)', imagePath: '/runes/geo.png' },
+    { key: 'aer', symbol: '💨', name: 'Aer (Air)', imagePath: '/runes/aer.png' },
+    { key: 'nyx', symbol: '🌑', name: 'Nyx (Dark)', imagePath: '/runes/nyx.png' },
+    { key: 'lux', symbol: '☀️', name: 'Lux (Light)', imagePath: '/runes/lux.png' },
+    { key: 'arc', symbol: '✶', name: 'Arc (Arcane)', imagePath: '/runes/arc.png' }
   ];
 
   // V2-only card type definitions
@@ -88,7 +88,7 @@ export class CardEditModalComponent implements OnChanges, AfterViewInit {
     return {
       title: card.title,
       type: card.type,
-      element: card.element,
+      elements: card.elements,
       backgroundImage: card.backgroundImage || '',
       details: card.details.map(detail => ({
         name: detail.name,
@@ -246,8 +246,8 @@ export class CardEditModalComponent implements OnChanges, AfterViewInit {
       errors.push('Card type is required');
     }
 
-    if (!this.editingCard.element?.trim()) {
-      errors.push('Card element is required');
+    if (!this.editingCard.elements || this.editingCard.elements.length === 0) {
+      errors.push('Card must have at least one element');
     }
 
     if (!this.editingCard.details || this.editingCard.details.length === 0) {
@@ -355,14 +355,15 @@ export class CardEditModalComponent implements OnChanges, AfterViewInit {
 
   getElementImagePath(elementKey: string): string {
     const element = this.availableElements.find(e => e.key === elementKey);
-    return element ? element.imagePath : '/arc.png'; // Default fallback
+    return element ? element.imagePath : '/runes/arc.png'; // Default fallback
   }
 
   onElementImageError(event: Event): void {
     // Replace broken image with fallback emoji or text
     const img = event.target as HTMLImageElement;
     if (img) {
-      const elementKey = this.editingCard?.element;
+      // Try to get element key from the img's data attribute or similar
+      const elementKey = img.getAttribute('data-element-key');
       const element = this.availableElements.find(e => e.key === elementKey);
       if (element) {
         // Create a fallback by replacing the img with a span containing the emoji
@@ -378,6 +379,30 @@ export class CardEditModalComponent implements OnChanges, AfterViewInit {
         img.parentNode?.replaceChild(span, img);
       }
     }
+  }
+
+  // Element selection methods for multi-element support
+  isElementSelected(elementKey: string): boolean {
+    return this.editingCard?.elements?.includes(elementKey) || false;
+  }
+
+  toggleElement(elementKey: string): void {
+    if (!this.editingCard) return;
+    
+    if (!this.editingCard.elements) {
+      this.editingCard.elements = [];
+    }
+
+    const index = this.editingCard.elements.indexOf(elementKey);
+    if (index > -1) {
+      // Remove element
+      this.editingCard.elements.splice(index, 1);
+    } else {
+      // Add element
+      this.editingCard.elements.push(elementKey);
+    }
+    
+    this.markAsChanged();
   }
 
   isValidElement(elementKey: string): boolean {

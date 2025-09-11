@@ -12,7 +12,7 @@ namespace Dragoneye.Server.Models
     {
         public string Title { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
-        public string Element { get; set; } = string.Empty;
+        public List<string> Elements { get; set; } = new();
         public string? BackgroundImage { get; set; }
         public List<CardDetail> Details { get; set; } = new();
         public bool Pinned { get; set; } = false;
@@ -35,5 +35,7 @@ namespace Dragoneye.Server.Models
     {
         public string Key { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
+        public string Symbol { get; set; } = string.Empty;
+        public string ImagePath { get; set; } = string.Empty;
     }
 }

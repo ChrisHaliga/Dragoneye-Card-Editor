@@ -27,7 +27,7 @@ export interface BulkUpdateOptions {
   cards?: CardSelection[];
   updates?: {
     type?: string;
-    element?: string;
+    elements?: string[];
     costMultiplier?: number;
   };
 }
@@ -253,7 +253,7 @@ export class BulkOperationsWorkflow {
 
         const cardUpdates: Partial<Card> = {};
         if (updates.type) cardUpdates.type = updates.type;
-        if (updates.element) cardUpdates.element = updates.element;
+        if (updates.elements) cardUpdates.elements = updates.elements;
 
         let updateObservable = this.cardActions.updateCard(selection.groupIndex, selection.cardIndex, cardUpdates);
 

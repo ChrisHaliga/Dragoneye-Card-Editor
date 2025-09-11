@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { ElementData, ElementDisplayInfo } from '../../../core/models/element.model';
+import { ElementData } from '../../../core/models/element.model';
 import { CardApiRepository } from '../../../core/repositories/http/card-api.repository';
 import { ELEMENT_SYMBOLS, ELEMENT_IMAGES, ELEMENT_CSS_CLASSES, DEFAULT_ELEMENT_KEY, DEFAULT_ELEMENT_SYMBOL, DEFAULT_ELEMENT_IMAGE } from '../../../core/constants/elements.const';
 
@@ -55,6 +55,16 @@ export class ElementService {
       return element;
     }
 
+    // Check if it's a special UI element (nat, duo) that might not be in the cache
+    if (ELEMENT_SYMBOLS[key] && ELEMENT_IMAGES[key]) {
+      return {
+        key: key,
+        name: key,
+        symbol: ELEMENT_SYMBOLS[key],
+        imagePath: ELEMENT_IMAGES[key]
+      };
+    }
+
     // Return default element if not found
     return {
       key: DEFAULT_ELEMENT_KEY,
@@ -81,14 +91,8 @@ export class ElementService {
     return ELEMENT_CSS_CLASSES[elementKey] || 'element-default';
   }
 
-  getElementDisplayInfo(key: string): ElementDisplayInfo {
-    const element = this.getElement(key);
-    return {
-      symbol: element.symbol,
-      cssClass: this.getElementCssClass(element.key),
-      name: element.name,
-      imagePath: element.imagePath
-    };
+  getElementDisplayData(key: string): ElementData {
+    return this.getElement(key);
   }
 
   isValidElement(key: string): boolean {

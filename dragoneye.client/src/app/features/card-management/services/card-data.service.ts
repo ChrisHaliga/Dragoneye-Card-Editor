@@ -223,7 +223,7 @@ export class CardDataService {
     const newCard: Card = {
       title: 'New Card',
       type: 'Action',
-      element: 'arc',
+      elements: ['arc'],
       backgroundImage: '',
       details: [{ name: 'Action', details: 'Enter description here', apCost: 1, spCost: 0 }],
       ...card

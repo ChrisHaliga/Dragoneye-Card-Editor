@@ -1,4 +1,4 @@
-import { ElementData, ElementDisplayInfo } from '../../../core/models/element.model';
+import { ElementData } from '../../../core/models/element.model';
 import { ELEMENT_SYMBOLS, ELEMENT_CSS_CLASSES, DEFAULT_ELEMENT_KEY, DEFAULT_ELEMENT_SYMBOL } from '../../../core/constants/elements.const';
 
 export class ElementFormatter {
@@ -40,21 +40,6 @@ export class ElementFormatter {
   }
 
   /**
-   * Get complete element display information
-   */
-  static getElementDisplayInfo(elementKey: string): ElementDisplayInfo {
-    const key = elementKey.toLowerCase();
-    const symbol = ELEMENT_SYMBOLS[key] || DEFAULT_ELEMENT_SYMBOL;
-    const cssClass = ELEMENT_CSS_CLASSES[key] || 'element-default';
-    
-    return {
-      symbol,
-      cssClass,
-      name: elementKey
-    };
-  }
-
-  /**
    * Get element data object from key
    */
   static getElementData(elementKey: string): ElementData {
@@ -62,7 +47,8 @@ export class ElementFormatter {
     return {
       key,
       name: elementKey,
-      symbol: ELEMENT_SYMBOLS[key] || DEFAULT_ELEMENT_SYMBOL
+      symbol: ELEMENT_SYMBOLS[key] || DEFAULT_ELEMENT_SYMBOL,
+      imagePath: `/images/elements/${key}.png` // Simple path construction
     };
   }
 
@@ -228,10 +214,11 @@ export class ElementFormatter {
    * Generate element badge HTML
    */
   static generateElementBadge(elementKey: string, includeText: boolean = true): string {
-    const displayInfo = this.getElementDisplayInfo(elementKey);
-    const textPart = includeText ? ` ${displayInfo.name}` : '';
+    const elementData = this.getElementData(elementKey);
+    const cssClass = this.getElementCssClass(elementKey);
+    const textPart = includeText ? ` ${elementData.name}` : '';
     
-    return `<span class="element-badge ${displayInfo.cssClass}">${displayInfo.symbol}${textPart}</span>`;
+    return `<span class="element-badge ${cssClass}">${elementData.symbol}${textPart}</span>`;
   }
 
   /**
@@ -286,13 +273,13 @@ export class ElementFormatter {
    */
   static getElementStyles(elementKey: string): { [key: string]: string } {
     const palette = this.getElementColorPalette(elementKey);
-    const displayInfo = this.getElementDisplayInfo(elementKey);
+    const cssClass = this.getElementCssClass(elementKey);
     
     return {
       backgroundColor: palette.primary,
       color: palette.text,
       borderColor: palette.secondary,
-      className: displayInfo.cssClass
+      className: cssClass
     };
   }
 }

@@ -172,10 +172,10 @@ export class CardEditingWorkflow {
           this.addUndoAction({
             type: 'card_update',
             cardSelection: editingCard,
-            description: `Updated card element from "${oldCard.element}" to "${element}"`,
+            description: `Updated card elements from "${oldCard.elements.join(', ')}" to "${element}"`,
             timestamp: new Date(),
-            undo: () => this.cardActions.updateCardElement(editingCard.groupIndex, editingCard.cardIndex, oldCard.element).subscribe(),
-            redo: () => this.cardActions.updateCardElement(editingCard.groupIndex, editingCard.cardIndex, element).subscribe()
+            undo: () => this.cardActions.updateCard(editingCard.groupIndex, editingCard.cardIndex, { elements: oldCard.elements }).subscribe(),
+            redo: () => this.cardActions.updateCard(editingCard.groupIndex, editingCard.cardIndex, { elements: [element] }).subscribe()
           });
 
           this.updateEditingState({

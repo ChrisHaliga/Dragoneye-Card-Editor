@@ -41,8 +41,48 @@ export class CardDisplayComponent {
   }
 
   getElementImagePath(elementKey: string): string {
-    if (!elementKey) return '/arc.png'; // Default fallback
+    if (!elementKey) return '/runes/arc.png'; // Default fallback
     return this.elementService.getElementImagePath(elementKey);
+  }
+
+  getCardElements(card: Card): string[] {
+    return card.elements || [];
+  }
+
+  // UI-only method to handle special element combinations for display
+  getDisplayElements(card: Card): string[] {
+    const elements = [...(card.elements || [])]; // Create a copy
+    const displayElements: string[] = [];
+    
+    // Track which elements we've already processed
+    const processed = new Set<string>();
+    
+    // Check for all 4 natural elements (earth, water, fire, air)
+    const naturalElements = ['geo', 'hyd', 'pyr', 'aer'];
+    const hasAllNatural = naturalElements.every(element => elements.includes(element));
+    
+    if (hasAllNatural) {
+      displayElements.push('nat');
+      naturalElements.forEach(element => processed.add(element));
+    }
+    
+    // Check for light + dark combination
+    const hasLightAndDark = elements.includes('lux') && elements.includes('nyx');
+    
+    if (hasLightAndDark) {
+      displayElements.push('duo');
+      processed.add('lux');
+      processed.add('nyx');
+    }
+    
+    // Add any remaining elements that weren't part of special combinations
+    elements.forEach(element => {
+      if (!processed.has(element)) {
+        displayElements.push(element);
+      }
+    });
+    
+    return displayElements;
   }
 
   onElementImageError(event: Event): void {

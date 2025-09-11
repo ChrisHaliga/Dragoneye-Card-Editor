@@ -50,27 +50,28 @@
                 </div>
 
                 <div class="mb-3">
-                  <label class="form-label">Element</label>
-                  <select class="form-select form-select-sm" 
-                          [(ngModel)]="editingCard.element"
-                          (change)="markAsChanged()">
-                    <option value="">Select an element...</option>
-                    <option *ngFor="let element of availableElements" [value]="element.key">
-                      {{ element.symbol }} {{ element.name }}
-                    </option>
-                  </select>
-                  <!-- Element preview -->
-                  <div *ngIf="editingCard.element" class="mt-2">
-                    <small class="text-muted">Selected element:</small>
-                    <div class="d-flex align-items-center mt-1">
-                      <img [src]="getElementImagePath(editingCard.element)" 
-                           class="me-2" 
-                           style="width: 30px; height: 30px; object-fit: contain;"
-                           [alt]="getElementDisplayName(editingCard.element)"
-                           (error)="onElementImageError($event)">
-                      <span class="small">{{ getElementDisplayName(editingCard.element) }}</span>
-                    </div>
+                  <label class="form-label">Elements</label>
+                  <div class="d-flex flex-wrap gap-2 mt-2">
+                    <button
+                      *ngFor="let element of availableElements"
+                      type="button"
+                      class="btn btn-sm position-relative"
+                      [class.btn-outline-primary]="!isElementSelected(element.key)"
+                      [class.btn-primary]="isElementSelected(element.key)"
+                      (click)="toggleElement(element.key)"
+                      style="width: 50px; height: 50px;">
+                      <img 
+                        [src]="getElementImagePath(element.key)" 
+                        [alt]="element.name"
+                        style="width: 32px; height: 32px; object-fit: contain;"
+                        (error)="onElementImageError($event)">
+                      <i 
+                        *ngIf="isElementSelected(element.key)"
+                        class="bi bi-check-circle-fill position-absolute top-0 end-0 text-white bg-primary rounded-circle"
+                        style="font-size: 12px; transform: translate(25%, -25%);"></i>
+                    </button>
                   </div>
+                  <small class="form-text text-muted">Select one or more elements for this card</small>
                 </div>
 
                 <div class="mb-3">

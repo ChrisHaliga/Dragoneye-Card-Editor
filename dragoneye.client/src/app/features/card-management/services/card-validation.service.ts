@@ -1,6 +1,6 @@
 // Card validation service
 
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 
 import { Card, CardDetail, CardGroup, ValidationResult, CardValidationRules } from '../../../core/models/card.model';
 import { ElementService } from './element.service';
@@ -42,14 +42,18 @@ export class CardValidationService {
       errors.push('Invalid card type');
     }
 
-    // Validate element
-    if (validationRules.elementRequired && (!card.element || card.element.trim().length === 0)) {
-      errors.push('Card element is required');
+    // Validate elements
+    if (validationRules.elementRequired && (!card.elements || card.elements.length === 0)) {
+      errors.push('Card must have at least one element');
     }
 
-    if (card.element && !this.elementService.isValidElement(card.element)) {
-      const suggestion = this.elementService.validateElementKey(card.element).suggestion;
-      errors.push(`Invalid element: ${card.element}${suggestion ? `. Did you mean "${suggestion}"?` : ''}`);
+    if (card.elements) {
+      card.elements.forEach(element => {
+        if (!this.elementService.isValidElement(element)) {
+          const suggestion = this.elementService.validateElementKey(element).suggestion;
+          errors.push(`Invalid element: ${element}${suggestion ? `. Did you mean "${suggestion}"?` : ''}`);
+        }
+      });
     }
 
     // Validate details

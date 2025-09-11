@@ -1,30 +1,32 @@
-import { ElementSymbolMap, ElementImageMap } from '../models/element.model';
-
 // Element symbols and mappings
-export const ELEMENT_SYMBOLS: ElementSymbolMap = {
+export const ELEMENT_SYMBOLS: { [key: string]: string } = {
   'pyr': '🔥',
   'hyd': '💧',
   'geo': '🌍',
   'aer': '💨',
   'nyx': '🌑',
   'lux': '☀️',
-  'arc': '✶'
+  'arc': '✶',
+  'nat': '🌿',  // All 4 natural elements
+  'duo': '☯️'   // Light + Dark combination
 };
 
 // Element image paths in public folder
-export const ELEMENT_IMAGES: ElementImageMap = {
-  'pyr': '/pyr.png',
-  'hyd': '/hyd.png',
-  'geo': '/geo.png',
-  'aer': '/aer.png',
-  'nyx': '/nyx.png',
-  'lux': '/lux.png',
-  'arc': '/arc.png'
+export const ELEMENT_IMAGES: { [key: string]: string } = {
+  'pyr': '/runes/pyr.png',
+  'hyd': '/runes/hyd.png',
+  'geo': '/runes/geo.png',
+  'aer': '/runes/aer.png',
+  'nyx': '/runes/nyx.png',
+  'lux': '/runes/lux.png',
+  'arc': '/runes/arc.png',
+  'nat': '/runes/nat.png',  // All 4 natural elements
+  'duo': '/runes/duo.png'   // Light + Dark combination
 };
 
 export const DEFAULT_ELEMENT_KEY = 'arc';
 export const DEFAULT_ELEMENT_SYMBOL = '✶';
-export const DEFAULT_ELEMENT_IMAGE = '/arc.png';
+export const DEFAULT_ELEMENT_IMAGE = '/runes/arc.png';
 
 export const ELEMENT_CSS_CLASSES: { [key: string]: string } = {
   'pyr': 'element-fire',
